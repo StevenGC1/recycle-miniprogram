@@ -1,0 +1,43 @@
+/* pages/mall/mall.wxss */
+
+.mall-tab-bar {
+  display: flex;
+  flex-direction: row;
+  background-color: #fff;
+  padding: 0 20rpx;
+}
+.mall-tab {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: #999;
+}
+.mall-tab-active {
+  color: #2B9939;
+  font-weight: bold;
+  border-bottom: 4rpx solid #2B9939;
+}
+
+.bound-tip {
+  padding: 16rpx 30rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.mall-item-name {
+  font-size: 30rpx;
+  font-weight: bold;
+}
+.mall-item-price {
+  font-size: 28rpx;
+  color: #e64340;
+  margin-top: 12rpx;
+}
+.mall-item-desc {
+  margin-top: 12rpx;
+}
+.mall-buy-btn {
+  padding: 16rpx 0;
+  font-size: 28rpx;
+}

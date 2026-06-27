@@ -1,0 +1,62 @@
+/* pages/familyBind/familyBind.wxss */
+
+.container {
+  padding-bottom: 160rpx;
+}
+
+.form-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.form-item:last-child {
+  border-bottom: none;
+}
+.form-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+  display: block;
+}
+.form-value {
+  font-size: 30rpx;
+  color: #333;
+}
+.form-input {
+  font-size: 30rpx;
+  width: 100%;
+}
+.arrow {
+  color: #ccc;
+  font-size: 36rpx;
+}
+
+.bottom-btn-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 8rpx rgba(0,0,0,0.05);
+}
+
+.list-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+.family-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.family-item:last-child {
+  border-bottom: none;
+}
+.family-name {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+.book-btn {
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
+}

@@ -1,0 +1,32 @@
+<!--
+  pages/mall/mall.wxml
+  ============================================================
+  二手/积分商城
+  对应 PRD：
+    - 默认Tab为"同城二手车间"
+    - 仅展示用户已绑定回收商家上架的二手闲置物品
+    - 下单提示"商家将在下次上门回收时顺路配送，或支持自提"
+  原型阶段只做了一个 Tab（同城二手车间），积分商城Tab先留占位，
+  避免一次做太多增加你判断"核心流程是否好用"的干扰项。
+============================================================ -->
+<view class="container">
+
+  <view class="mall-tab-bar">
+    <view class="mall-tab mall-tab-active">同城二手车间</view>
+    <view class="mall-tab" bindtap="onPointsTabTip">积分商城</view>
+  </view>
+
+  <view class="bound-tip">
+    <text>📦 仅展示【{{merchantName}}】上架的闲置物品</text>
+  </view>
+
+  <view wx:for="{{itemList}}" wx:key="itemId" class="card mall-item-card">
+    <view class="mall-item-name">{{item.name}}</view>
+    <view class="mall-item-price">{{item.price}}</view>
+    <view class="mall-item-desc text-gray">{{item.desc}}</view>
+    <view class="mt-20">
+      <view class="btn-primary mall-buy-btn" data-name="{{item.name}}" bindtap="onBuyItem">下单</view>
+    </view>
+  </view>
+
+</view>

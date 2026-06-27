@@ -85,6 +85,59 @@ const RESIDENT_PROFILE = {
   boundMerchant: '张师傅废品回收站' // 当前绑定的"熟客"商户，体现"熟客刷脸"机制
 };
 
+// ---------- 5. 今日回收价（首页"今日回收价"板块用） ----------
+// 设计对应 PRD：
+//   若用户已绑定专属商家(parent_merchant_id) -> 优先展示该商家自定义价格
+//   若未绑定 -> 展示当前城市的平台参考均价
+// 原型阶段没有"城市定位识别"，直接用两套写死的数组模拟这两种情况。
+
+// 商家自定义价格（张师傅的价格表，比平台均价略高，体现"专属商家更划算"的私域价值）
+const MERCHANT_PRICE_LIST = [
+  { name: '黄板纸', price: '0.9' },
+  { name: '废铁', price: '1.2' },
+  { name: '废铝', price: '6.5' },
+  { name: '塑料瓶', price: '1.0' },
+  { name: '旧衣物', price: '0.3' },
+  { name: '废旧家电', price: '面议' }
+];
+
+// 平台城市参考均价（用户没有绑定专属商家时展示）
+const CITY_AVG_PRICE_LIST = [
+  { name: '黄板纸', price: '0.8' },
+  { name: '废铁', price: '1.1' },
+  { name: '废铝', price: '6.0' },
+  { name: '塑料瓶', price: '0.9' },
+  { name: '旧衣物', price: '0.2' },
+  { name: '废旧家电', price: '面议' }
+];
+
+// ---------- 6. 二手/积分商城 - 商品列表 ----------
+// 对应 PRD："仅拉取并展示该绑定回收站(商家)上架的二手闲置物品"
+// 原型阶段写死 3 件"张师傅"上架的二手物品。
+const MALL_ITEM_LIST = [
+  {
+    itemId: 'P001',
+    name: '二手自行车（八成新）',
+    price: '120元 或 800积分',
+    merchantName: '张师傅废品回收站',
+    desc: '自提或下次上门回收时顺路配送'
+  },
+  {
+    itemId: 'P002',
+    name: '二手电风扇',
+    price: '30元 或 200积分',
+    merchantName: '张师傅废品回收站',
+    desc: '自提或下次上门回收时顺路配送'
+  },
+  {
+    itemId: 'P003',
+    name: '闲置餐具套装',
+    price: '15元 或 100积分',
+    merchantName: '张师傅废品回收站',
+    desc: '自提或下次上门回收时顺路配送'
+  }
+];
+
 // ---------- 4. 工具函数：模拟"接口请求"，统一在这里返回数据 ----------
 // 之所以包一层函数而不是直接 module.exports = { ORDER_LIST },
 // 是为了让调用方式更接近"请求接口"，以后替换成真实请求时改动最小。
@@ -126,10 +179,28 @@ function getMerchantTaskList(merchantId) {
   );
 }
 
+// 获取今日回收价：根据是否绑定专属商家，返回不同价目表 + 来源文案
+// hasBoundMerchant: true 时模拟"已绑定专属商家"场景
+function getTodayPriceList(hasBoundMerchant) {
+  // 真实接口： GET /api/price/today?cityId=xxx&merchantId=xxx
+  if (hasBoundMerchant) {
+    return { sourceText: '专属商家价格', list: MERCHANT_PRICE_LIST };
+  }
+  return { sourceText: '本市平台参考价', list: CITY_AVG_PRICE_LIST };
+}
+
+// 获取二手商城商品列表（同城二手车间Tab，仅展示绑定商家上架的物品）
+function getMallItemList() {
+  // 真实接口： GET /api/mall/items?merchantId=xxx
+  return MALL_ITEM_LIST;
+}
+
 module.exports = {
   getOrderList,
   getMerchantProfile,
   getResidentProfile,
   getHallOrderList,
-  getMerchantTaskList
+  getMerchantTaskList,
+  getTodayPriceList,
+  getMallItemList
 };

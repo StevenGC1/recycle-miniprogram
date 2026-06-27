@@ -1,0 +1,56 @@
+<!--
+  pages/familyBind/familyBind.wxml
+  ============================================================
+  亲友代下：年轻人帮父母绑定地址，以后下单时可以选择"为父母预约"
+  这里同样使用 wx.chooseLocation 真实地图选点（与首页地址选择逻辑一致）
+============================================================ -->
+<view class="container">
+
+  <view class="card">
+    <view class="form-item">
+      <text class="form-label">父母称呼</text>
+      <input
+        class="form-input"
+        placeholder="例如：我爸 / 张阿姨"
+        value="{{familyName}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <view class="form-item" bindtap="onChooseAddress">
+      <text class="form-label">父母地址</text>
+      <view class="flex-row">
+        <text class="form-value">{{familyAddress || '点击选择/定位地址'}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">联系电话（选填）</text>
+      <input
+        class="form-input"
+        type="number"
+        placeholder="方便商家上门时联系"
+        value="{{familyPhone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+  </view>
+
+  <view class="bottom-btn-area">
+    <view class="btn-primary" bindtap="onSaveFamily">保存绑定</view>
+  </view>
+
+  <!-- 已绑定的亲友地址列表 -->
+  <view wx:if="{{familyList.length > 0}}" class="card">
+    <view class="list-title">已绑定的亲友地址</view>
+    <view wx:for="{{familyList}}" wx:key="id" class="family-item">
+      <view class="flex-between">
+        <text class="family-name">{{item.name}}</text>
+        <view class="btn-secondary book-btn" data-id="{{item.id}}" bindtap="onBookForFamily">为他预约</view>
+      </view>
+      <view class="text-gray mt-20">{{item.address}}</view>
+    </view>
+  </view>
+
+</view>

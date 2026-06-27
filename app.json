@@ -5,7 +5,9 @@
     "pages/mine/mine",
     "pages/merchant/hall/hall",
     "pages/merchant/tasks/tasks",
-    "pages/merchant/promotion/promotion"
+    "pages/merchant/promotion/promotion",
+    "pages/mall/mall",
+    "pages/familyBind/familyBind"
   ],
   "window": {
     "navigationBarBackgroundColor": "#2B9939",

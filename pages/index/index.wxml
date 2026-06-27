@@ -1,12 +1,13 @@
 <!--
   pages/index/index.wxml
   ============================================================
-  用户端首页（极简下单页）
-  设计原则：中老年用户优先，所以页面元素能少则少：
-    - 不需要选择垃圾分类
-    - 不需要填写重量
-    - 只需要：地址 + 时间 + (可选)备注/照片 + 一个大按钮
-  另外最上方提供"一键呼叫"按钮，给完全不想用小程序流程的人留一条后路。
+  用户端首页（极简下单页） —— V1.1
+  本版本调整：
+    1. 移除了底部独立的"照片上传框"，拍照统一由顶部【拍照下单】按钮触发，
+       拍完后在"备注"上方用小缩略图展示，可删除/重拍。
+    2. 新增"今日回收价"板块（横向滚动）。
+    3. 新增"快捷标签"，点击自动追加备注文字。
+    4. 新增"二手/积分商城"悬浮入口。
 ============================================================ -->
 <view class="container">
 
@@ -27,10 +28,24 @@
     </view>
   </view>
 
+  <!-- ============ 新增：今日回收价 板块 ============ -->
+  <view class="price-board">
+    <view class="price-board-title">
+      <text>💰 今日回收价</text>
+      <text class="price-board-source">{{priceSourceText}}</text>
+    </view>
+    <scroll-view scroll-x class="price-scroll" enable-flex>
+      <view wx:for="{{priceList}}" wx:key="name" class="price-item">
+        <text class="price-name">{{item.name}}</text>
+        <text class="price-value">{{item.price}}元/斤</text>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- ============ 正式下单表单区（给愿意多点两下的用户） ============ -->
   <view class="card">
 
-    <!-- 地址选择：支持微信定位一键导入 -->
+    <!-- 地址选择：点击调用微信地图选点/定位 -->
     <view class="form-item" bindtap="onChooseAddress">
       <text class="form-label">上门地址</text>
       <view class="flex-row">
@@ -62,7 +77,33 @@
       </view>
     </view>
 
-    <!-- 备注 + 照片，都是选填，不强制 -->
+    <!-- 新增：快捷标签，点击后高亮并自动把文字追加进备注框 -->
+    <view class="form-item">
+      <text class="form-label">快捷标签（可多选）</text>
+      <view class="quick-tag-group">
+        <view
+          wx:for="{{quickTags}}"
+          wx:key="value"
+          class="quick-tag {{item.active ? 'quick-tag-active' : ''}}"
+          data-index="{{index}}"
+          bindtap="onToggleTag"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 已拍摄照片缩略图：在备注上方展示，可删除/重拍。没拍照时不显示这一块 -->
+    <view wx:if="{{tempPhotoPath}}" class="form-item">
+      <text class="form-label">已拍照片</text>
+      <view class="photo-thumb-row">
+        <image class="photo-thumb" src="{{tempPhotoPath}}" mode="aspectFill" bindtap="onPreviewPhoto" />
+        <view class="photo-thumb-actions">
+          <view class="photo-action-btn" bindtap="onChoosePhoto">重拍</view>
+          <view class="photo-action-btn photo-action-delete" bindtap="onDeletePhoto">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注，选填 -->
     <view class="form-item">
       <text class="form-label">备注（选填）</text>
       <input
@@ -72,17 +113,17 @@
         bindinput="onRemarkInput"
       />
     </view>
-
-    <view class="form-item" bindtap="onChoosePhoto">
-      <text class="form-label">照片（选填）</text>
-      <view wx:if="{{!tempPhotoPath}}" class="photo-placeholder">+ 拍照</view>
-      <image wx:else class="photo-preview" src="{{tempPhotoPath}}" mode="aspectFill" />
-    </view>
   </view>
 
   <!-- ============ 主操作按钮：立即预约 ============ -->
   <view class="bottom-btn-area">
     <view class="btn-primary" bindtap="onSubmitOrder">立即预约</view>
+  </view>
+
+  <!-- ============ 新增：悬浮球 - 二手/积分商城入口 ============ -->
+  <view class="float-ball" bindtap="onGoMall">
+    <text class="float-ball-icon">🛍️</text>
+    <text class="float-ball-text">商城</text>
   </view>
 
 </view>

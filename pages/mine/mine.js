@@ -24,10 +24,8 @@ Page({
   },
 
   onAddFamily() {
-    wx.showModal({
-      title: '亲友代下',
-      content: '此处用于绑定父母地址，原型阶段暂不实现具体表单，仅展示入口位置是否合理。',
-      showCancel: false
+    wx.navigateTo({
+      url: '/pages/familyBind/familyBind'
     });
   },
 
