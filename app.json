@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/orderList/orderList",
+    "pages/mine/mine",
+    "pages/merchant/hall/hall",
+    "pages/merchant/tasks/tasks",
+    "pages/merchant/promotion/promotion"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#2B9939",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "回收助手",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#2B9939",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/orderList/orderList",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

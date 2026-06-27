@@ -1,0 +1,49 @@
+<!--
+  pages/mine/mine.wxml
+  ============================================================
+  "我的"页面
+  内容：我的地址、我的积分、联系客服
+  另外放一个"切换至商户端"的入口按钮，
+  用于演示"同一个小程序内通过角色判断展示不同功能"的设计。
+============================================================ -->
+<view class="container">
+
+  <view class="card profile-card">
+    <view class="avatar-placeholder">👤</view>
+    <view class="mt-20">
+      <text class="nickname">{{profile.nickName}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="flex-between cell">
+      <text class="cell-label">我的地址</text>
+      <text class="cell-value">{{profile.myAddress}}</text>
+    </view>
+    <view class="flex-between cell">
+      <text class="cell-label">我的积分</text>
+      <text class="cell-value points-value">{{profile.myPoints}} 分</text>
+    </view>
+    <view class="flex-between cell">
+      <text class="cell-label">绑定回收师傅</text>
+      <text class="cell-value">{{profile.boundMerchant}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="flex-between cell" bindtap="onAddFamily">
+      <text class="cell-label">亲友代下（绑定父母地址）</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="flex-between cell" bindtap="onContactService">
+      <text class="cell-label">联系客服</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 角色切换入口：演示用户端/商户端共用一个小程序 -->
+  <view class="card switch-role-card" bindtap="onSwitchToMerchant">
+    <text>🔄 我是回收商家，切换至商户端</text>
+  </view>
+
+</view>

@@ -1,0 +1,44 @@
+<!--
+  pages/merchant/hall/hall.wxml
+  ============================================================
+  商户端 - 接单大厅（公共订单池）
+  展示方圆 N 公里内的自然流量订单，隐藏手机号和详细门牌号，
+  只显示小区名和时间，商户点击【抢单】后才能看到完整信息
+  （完整信息展示在"我的任务"页）。
+============================================================ -->
+<view class="container">
+
+  <view class="merchant-header">
+    <text>📍 附近 {{radiusKm}} 公里内的订单</text>
+  </view>
+
+  <view wx:if="{{hallOrders.length === 0}}" class="empty-tip">暂无可抢订单，稍后再来看看～</view>
+
+  <view wx:for="{{hallOrders}}" wx:key="orderId" class="card">
+    <view class="flex-between">
+      <text class="community-name">{{item.community}}</text>
+      <text class="tag tag-wait">待接单</text>
+    </view>
+    <view class="mt-20">
+      <text class="order-line">🕒 {{item.appointmentTime}}</text>
+    </view>
+    <view wx:if="{{item.remark}}" class="mt-20">
+      <text class="order-line text-gray">备注：{{item.remark}}</text>
+    </view>
+    <view class="mt-20 text-gray">
+      <text>下单时间：{{item.createTime}}</text>
+    </view>
+
+    <view class="mt-20 grab-row">
+      <view class="btn-primary grab-btn" data-id="{{item.orderId}}" bindtap="onGrabOrder">抢单</view>
+    </view>
+  </view>
+
+  <!-- 底部导航到"我的任务" / "推广中心"，因为这两个页面不在tabBar里 -->
+  <view class="bottom-nav">
+    <view class="bottom-nav-item" bindtap="goTasks">我的任务</view>
+    <view class="bottom-nav-item" bindtap="goPromotion">推广中心</view>
+    <view class="bottom-nav-item" bindtap="goBackResident">退出商户端</view>
+  </view>
+
+</view>

@@ -1,0 +1,51 @@
+/* pages/mine/mine.wxss */
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+}
+.avatar-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: #e8f5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+}
+.nickname {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.cell {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.cell:last-child {
+  border-bottom: none;
+}
+.cell-label {
+  font-size: 28rpx;
+  color: #333;
+}
+.cell-value {
+  font-size: 28rpx;
+  color: #666;
+  max-width: 400rpx;
+  text-align: right;
+}
+.points-value {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.switch-role-card {
+  text-align: center;
+  color: #2B9939;
+  font-weight: bold;
+  padding: 30rpx 0;
+}

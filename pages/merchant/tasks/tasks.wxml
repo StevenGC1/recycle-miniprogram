@@ -1,0 +1,71 @@
+<!--
+  pages/merchant/tasks/tasks.wxml
+  ============================================================
+  商户端 - 我的任务页
+  展示已接订单（待上门 + 已完成），抢单后才能看到完整地址和电话。
+============================================================ -->
+<view class="container">
+
+  <view wx:if="{{taskList.length === 0}}" class="empty-tip">暂无任务，去接单大厅抢单吧～</view>
+
+  <view wx:for="{{taskList}}" wx:key="orderId" class="card">
+    <view class="flex-between">
+      <text class="community-name">{{item.community}}</text>
+      <text class="tag {{item.statusTagClass}}">{{item.statusText}}</text>
+    </view>
+    <view class="mt-20">
+      <text class="order-line">📍 {{item.fullAddress}}</text>
+    </view>
+    <view class="mt-20">
+      <text class="order-line">📞 {{item.fullPhone}}</text>
+    </view>
+    <view class="mt-20">
+      <text class="order-line">🕒 {{item.appointmentTime}}</text>
+    </view>
+    <view wx:if="{{item.remark}}" class="mt-20">
+      <text class="order-line text-gray">备注：{{item.remark}}</text>
+    </view>
+
+    <!-- 待上门状态：三个核心动作按钮 -->
+    <view wx:if="{{item.status === 'accepted'}}" class="action-row mt-40">
+      <view class="action-btn" data-phone="{{item.fullPhone}}" bindtap="onCallResident">📞 拨打电话</view>
+      <view class="action-btn" data-address="{{item.fullAddress}}" bindtap="onNavigate">🧭 一键导航</view>
+      <view class="action-btn action-btn-confirm" data-id="{{item.orderId}}" bindtap="onConfirmDone">✅ 确认完成</view>
+    </view>
+
+    <!-- 已完成状态：展示积分发放记录，对应"记账与积分"留存策略 -->
+    <view wx:if="{{item.status === 'done'}}" class="mt-20 done-info">
+      <text>本次回收 {{item.weight}} 斤，已为客户发放积分 {{item.pointsEarned}} 分</text>
+    </view>
+  </view>
+
+</view>
+
+<!--
+  确认完成时弹出的"记账与积分"小弹窗。
+  对应方案里的核心留存策略：商户输入本次回收重量，系统按规则发放积分。
+  原型阶段积分规则简化为：积分 = 重量（1斤=1分），仅做演示。
+-->
+<view wx:if="{{showSettleModal}}" class="modal-mask" catchtap="onCloseModal">
+  <view class="modal-box" catchtap="noop">
+    <view class="modal-title">完成回收 · 记账</view>
+    <view class="modal-row">
+      <text class="modal-label">本次回收重量（斤）</text>
+      <input
+        class="modal-input"
+        type="number"
+        placeholder="请输入重量"
+        value="{{settleWeight}}"
+        bindinput="onSettleWeightInput"
+      />
+    </view>
+    <view class="modal-row">
+      <text class="modal-label">将发放积分</text>
+      <text class="modal-points">{{settleWeight || 0}} 分</text>
+    </view>
+    <view class="modal-btn-row">
+      <view class="modal-btn modal-btn-cancel" bindtap="onCloseModal">取消</view>
+      <view class="modal-btn modal-btn-confirm" bindtap="onSubmitSettle">确认发放并完成</view>
+    </view>
+  </view>
+</view>

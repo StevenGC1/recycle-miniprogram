@@ -1,0 +1,50 @@
+/* pages/merchant/promotion/promotion.wxss */
+
+.code-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.code-placeholder {
+  width: 320rpx;
+  height: 320rpx;
+  background-color: #f5f5f5;
+  border: 2rpx dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.code-icon {
+  font-size: 160rpx;
+}
+.code-text {
+  font-size: 26rpx;
+  color: #666;
+}
+.code-desc {
+  font-size: 24rpx;
+  color: #999;
+  padding: 0 20rpx;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: row;
+}
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stat-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2B9939;
+}
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}

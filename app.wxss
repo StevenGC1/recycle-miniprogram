@@ -1,0 +1,96 @@
+/* app.wxss
+============================================================
+全局样式文件。
+这里只放"跨页面通用"的样式（按钮、卡片、间距等），
+每个页面自己的私有样式写在各自的 .wxss 文件里。
+============================================================ */
+
+page {
+  background-color: #f5f5f5;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* ---------- 通用大按钮（首页"立即预约"这种主操作按钮用这个） ---------- */
+.btn-primary {
+  background-color: #2B9939;
+  color: #fff;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 36rpx;
+  padding: 28rpx 0;
+}
+
+.btn-primary:active {
+  opacity: 0.8;
+}
+
+/* 次要按钮，比如"取消"、"拍照" */
+.btn-secondary {
+  background-color: #ffffff;
+  color: #2B9939;
+  border: 2rpx solid #2B9939;
+  text-align: center;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  padding: 20rpx 0;
+}
+
+/* 危险操作按钮，比如"取消订单" */
+.btn-danger {
+  background-color: #ffffff;
+  color: #e64340;
+  border: 2rpx solid #e64340;
+  text-align: center;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  padding: 12rpx 24rpx;
+}
+
+/* 通用卡片容器 */
+.card {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 状态标签的几种颜色 */
+.tag {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+.tag-wait {      /* 待接单 - 橙色，提示紧迫感 */
+  background-color: #fff3e0;
+  color: #ff9800;
+}
+.tag-accepted {  /* 待上门 - 蓝色 */
+  background-color: #e3f2fd;
+  color: #2196f3;
+}
+.tag-done {      /* 已完成 - 绿色 */
+  background-color: #e8f5e9;
+  color: #2B9939;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.flex-between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.text-gray {
+  color: #999;
+  font-size: 24rpx;
+}
+.mt-20 { margin-top: 20rpx; }
+.mt-40 { margin-top: 40rpx; }
