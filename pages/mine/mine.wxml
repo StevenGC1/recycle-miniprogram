@@ -44,6 +44,11 @@
       <text class="cell-label">📋 申请入驻成为回收商</text>
       <text class="arrow">›</text>
     </view>
+    <!-- V2.3 新增：投诉与建议 -->
+    <view class="flex-between cell" bindtap="onOpenComplaint">
+      <text class="cell-label">💬 投诉与建议</text>
+      <text class="arrow">›</text>
+    </view>
   </view>
 
   <!-- 联系客服弹窗：微信号可一键复制（wx.showModal原生弹窗不支持复制按钮，所以这里自定义弹窗） -->
@@ -69,12 +74,34 @@
     <view class="text-gray switch-tip">关闭后回到首页查看"未绑定商家"的展示效果（隐藏一键呼叫、横幅文案变化）</view>
   </view>
 
-  <!-- ============ V1.9：测试专用"自由切换黑卡" ============ -->
-  <!-- 真实上线后，是否能进商户端完全由后台审核状态(approved)自动判定，
-       不会有这个按钮。这里只是为了方便你在开发阶段不用每次都重新走完整的
-       "申请->（你去后台改状态）->审核通过"流程，一键模拟"已是审核通过商户"的状态。 -->
-  <view class="card switch-role-card" bindtap="onForceApproveAndEnter">
-    <text>🔑 [测试用] 强制切换为已审核商户，进入工作台</text>
+  <!-- V2.3 新增：投诉与建议弹窗 -->
+  <view wx:if="{{showComplaintModal}}" class="modal-mask" catchtap="onCloseComplaintModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">投诉与建议</view>
+      <textarea
+        class="complaint-textarea"
+        placeholder="请描述您遇到的问题或建议（限200字）"
+        maxlength="200"
+        value="{{complaintContent}}"
+        bindinput="onComplaintInput"
+      />
+      <view class="complaint-count">{{complaintContent.length}}/200</view>
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseComplaintModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onSubmitComplaint">确认发送</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ V2.3：测试专用"三端任意门" ============ -->
+  <!-- 真实上线后不会有这个组件，仅用于你开发阶段在三个身份间无缝切换调试 -->
+  <view class="card anydoor-card">
+    <view class="anydoor-title text-gray">🚪 [测试用] 任意门 · 快速切换身份</view>
+    <view class="anydoor-row">
+      <view class="anydoor-btn" bindtap="onGoResident">👤 普通居民</view>
+      <view class="anydoor-btn" bindtap="onForceApproveAndEnter">🚲 回收小哥</view>
+      <view class="anydoor-btn" bindtap="onGoAdmin">🖥 平台总裁</view>
+    </view>
   </view>
 
 </view>

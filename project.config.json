@@ -16,7 +16,8 @@
     "useApiHook": true,
     "useApiHostProcess": true,
     "compileHotReLoad": true,
-    "lazyloadPlaceholderEnable": false
+    "lazyloadPlaceholderEnable": false,
+    "ignoreUploadUnusedFiles": false
   },
   "compileType": "miniprogram",
   "libVersion": "latest",

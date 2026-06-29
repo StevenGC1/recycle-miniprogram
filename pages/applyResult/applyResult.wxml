@@ -1,0 +1,27 @@
+<!--
+  pages/applyResult/applyResult.wxml
+  ============================================================
+  申请结果提示页：根据 mock.getMerchantApplication().status 展示对应视图
+============================================================ -->
+<view class="container">
+
+  <view wx:if="{{status === 'pending'}}" class="card status-card status-pending">
+    <text class="status-icon">⏳</text>
+    <text class="status-title">您的入驻申请已收到！</text>
+    <text class="status-desc">平台正在加急审核，通过后重新打开小程序即可激活商户工作台。</text>
+  </view>
+
+  <view wx:elif="{{status === 'approved'}}" class="card status-card status-approved">
+    <text class="status-icon">✅</text>
+    <text class="status-title">恭喜，审核已通过！</text>
+    <view class="btn-primary mt-40" bindtap="onGoMerchantIndex">进入商户工作台</view>
+  </view>
+
+  <view wx:elif="{{status === 'rejected'}}" class="card status-card status-rejected">
+    <text class="status-icon">❌</text>
+    <text class="status-title">很遗憾，申请未通过</text>
+    <text class="status-desc">驳回原因：{{application.rejectReason || '未填写具体原因'}}</text>
+    <view class="btn-primary mt-40" bindtap="onReapply">重新提交申请</view>
+  </view>
+
+</view>

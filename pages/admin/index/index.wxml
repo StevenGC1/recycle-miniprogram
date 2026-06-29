@@ -1,0 +1,138 @@
+<!--
+  pages/admin/index/index.wxml
+  ============================================================
+  隐藏管理后台（V2.3）
+  作为小程序里一个"隐藏页面"存在，不出现在 tabBar，仅通过"我的"页面
+  的【任意门】测试入口进入。建议在电脑端微信/开发者工具里全屏操作体验更好。
+  由4个面板组成，用顶部Tab切换，全部在一个页面内完成，简化路由结构。
+============================================================ -->
+<view class="container">
+
+  <view class="admin-tab-bar">
+    <view
+      wx:for="{{panelTabs}}"
+      wx:key="value"
+      class="admin-tab-item {{currentPanel === item.value ? 'admin-tab-active' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onSwitchPanel"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- ============ 面板1：用户管理 ============ -->
+  <view wx:if="{{currentPanel === 'users'}}" class="panel">
+    <view class="search-bar">
+      <input class="search-input" placeholder="输入手机号或姓名检索" value="{{userKeyword}}" bindinput="onUserKeywordInput" confirm-type="search" bindconfirm="onSearchUser" />
+      <view class="search-btn" bindtap="onSearchUser">搜索</view>
+    </view>
+
+    <view wx:for="{{userList}}" wx:key="userId" class="card user-card">
+      <view class="flex-between">
+        <text class="user-name">{{item.nickName}}</text>
+        <text class="tag {{item.status === 'banned' ? 'tag-banned' : 'tag-done'}}">{{item.status === 'banned' ? '已封禁' : '正常'}}</text>
+      </view>
+      <view class="mt-20 text-gray">{{item.phone}}</view>
+      <view class="mt-20 flex-row stat-row">
+        <text class="stat-normal">历史成单 {{item.completedOrders}}</text>
+        <text class="stat-danger">取消订单 {{item.cancelledOrders}}</text>
+      </view>
+      <view class="mt-20 action-row">
+        <view wx:if="{{item.status !== 'banned'}}" class="action-btn action-btn-danger" data-id="{{item.userId}}" bindtap="onBanUser">🚨 封禁账号</view>
+        <view wx:else class="action-btn action-btn-confirm" data-id="{{item.userId}}" bindtap="onUnbanUser">🟢 解禁</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 面板2：商户管理与审批 ============ -->
+  <view wx:if="{{currentPanel === 'merchants'}}" class="panel">
+    <view class="sub-tab-bar">
+      <view class="sub-tab-item {{merchantSubTab === 'apply' ? 'sub-tab-active' : ''}}" data-value="apply" bindtap="onSwitchMerchantSubTab">入驻审批大厅</view>
+      <view class="sub-tab-item {{merchantSubTab === 'board' ? 'sub-tab-active' : ''}}" data-value="board" bindtap="onSwitchMerchantSubTab">全城商户大盘</view>
+    </view>
+
+    <!-- 子页签1：入驻审批大厅 -->
+    <view wx:if="{{merchantSubTab === 'apply'}}">
+      <view wx:if="{{pendingApplications.length === 0}}" class="empty-tip">暂无待审批申请</view>
+      <view wx:for="{{pendingApplications}}" wx:key="applicantId" class="card">
+        <view class="apply-shop-name">{{item.shopName}}</view>
+        <view class="mt-20 text-gray">负责人：{{item.contactName}} · {{item.phone}}</view>
+        <view class="mt-20 text-gray">网点坐标：{{item.locationName}}</view>
+        <view class="mt-20 text-gray">提交时间：{{item.submitTime}}</view>
+        <view wx:if="{{item.photoPath}}" class="mt-20" bindtap="onViewPhoto" data-photo="{{item.photoPath}}">
+          <text class="view-photo-link">查看照片 ›</text>
+        </view>
+        <view class="mt-40 action-row">
+          <view class="action-btn action-btn-confirm" data-id="{{item.applicantId}}" bindtap="onApproveApplication">🟢 准予入驻</view>
+          <view class="action-btn action-btn-danger" data-id="{{item.applicantId}}" bindtap="onOpenRejectModal">🔴 驳回申请</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 子页签2：全城商户大盘 -->
+    <view wx:if="{{merchantSubTab === 'board'}}">
+      <view class="sort-bar">
+        <view class="sort-btn {{boardSortBy === 'points' ? 'sort-btn-active' : ''}}" data-sort="points" bindtap="onSortBoard">按积分</view>
+        <view class="sort-btn {{boardSortBy === 'todayOrderCount' ? 'sort-btn-active' : ''}}" data-sort="todayOrderCount" bindtap="onSortBoard">按今日成单量</view>
+        <view class="sort-btn {{boardSortBy === 'ratingAvg' ? 'sort-btn-active' : ''}}" data-sort="ratingAvg" bindtap="onSortBoard">按好评率</view>
+      </view>
+      <view wx:for="{{merchantBoardList}}" wx:key="merchantId" class="card {{item.ratingAvg < 4.0 ? 'card-warning' : ''}}">
+        <view class="flex-between">
+          <text class="user-name">{{item.merchantName}}</text>
+          <text class="rating-badge {{item.ratingAvg < 4.0 ? 'rating-badge-low' : ''}}">★{{item.ratingAvg}}</text>
+        </view>
+        <view class="mt-20 flex-row stat-row">
+          <text class="stat-normal">积分 {{item.points}}</text>
+          <text class="stat-normal">今日成单 {{item.todayOrderCount}}</text>
+        </view>
+        <view wx:if="{{item.status !== 'blacklisted'}}" class="mt-20 action-row">
+          <view class="action-btn action-btn-danger" data-id="{{item.merchantId}}" bindtap="onBlacklistMerchant">拉黑该商户</view>
+        </view>
+        <view wx:else class="mt-20 text-gray">已被拉黑</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 面板3：二手货架提单审核 ============ -->
+  <view wx:if="{{currentPanel === 'shopCheck'}}" class="panel">
+    <view wx:if="{{pendingShopItems.length === 0}}" class="empty-tip">暂无待审核商品</view>
+    <view wx:for="{{pendingShopItems}}" wx:key="itemId" class="card">
+      <view class="flex-between">
+        <text class="user-name">{{item.name}}</text>
+        <text class="item-price">¥{{item.price}}</text>
+      </view>
+      <view class="mt-20 text-gray">所属商家：{{item.merchantName}}</view>
+      <view class="mt-40 action-row">
+        <view class="action-btn action-btn-confirm" data-id="{{item.itemId}}" bindtap="onApproveShopItem">✅ 允许上架</view>
+        <view class="action-btn action-btn-danger" data-id="{{item.itemId}}" bindtap="onRejectShopItem">❌ 拒绝上架</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 面板4：投诉建议大厅 ============ -->
+  <view wx:if="{{currentPanel === 'suggestions'}}" class="panel">
+    <view wx:for="{{suggestionList}}" wx:key="id" class="card {{item.handled ? 'card-faded' : ''}}">
+      <view class="flex-between">
+        <text class="user-name">{{item.phone}}</text>
+        <text class="text-gray">{{item.time}}</text>
+      </view>
+      <view class="mt-20 suggestion-content">{{item.content}}</view>
+      <view class="mt-40 action-row">
+        <view class="action-btn" data-phone="{{item.phone}}" bindtap="onCallSuggestionUser">📞 拨打电话核实</view>
+        <view wx:if="{{!item.handled}}" class="action-btn action-btn-confirm" data-id="{{item.id}}" bindtap="onMarkHandled">标记为已处理</view>
+        <view wx:else class="action-btn action-btn-disabled">已处理</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 驳回原因弹窗 ============ -->
+  <view wx:if="{{showRejectModal}}" class="modal-mask" catchtap="onCloseRejectModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">驳回原因</view>
+      <textarea class="reject-textarea" placeholder="请输入驳回原因，将展示给申请人" value="{{rejectReason}}" bindinput="onRejectReasonInput" />
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseRejectModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onConfirmReject">确认驳回</view>
+      </view>
+    </view>
+  </view>
+
+</view>

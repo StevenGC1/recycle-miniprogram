@@ -1,40 +1,61 @@
 <!--
-  pages/merchantApply/merchantApply.wxml
+  pages/merchantApply/merchantApply.wxml —— V2.3
   ============================================================
-  用户端【我的】页面 -> 申请入驻成为回收商
-  对应 PRD："商户怎么注册" —— 填写资料后状态变为 pending(待审核)
+  申请成为回收商 - 完整表单版
+  字段：网点/店铺名称、负责人姓名、联系电话(支持一键导入微信手机号)、
+        回收常驻网点坐标(地图选点)、车辆/网点照片(1张)
+  提交后用 wx.redirectTo 跳转到独立的"审核中"结果页，且无法返回这个表单
+  （redirectTo 会关闭当前页面，不会留在页面栈里，用户没法用左上角返回按钮回到表单）
 ============================================================ -->
 <view class="container">
 
-  <!-- 已经是 approved 状态时，提示已是商户，引导去工作台 -->
-  <view wx:if="{{applicationStatus === 'approved'}}" class="card status-card status-approved">
-    <text class="status-title">✅ 您已是平台认证商户</text>
-    <view class="btn-primary mt-40" bindtap="onGoMerchantIndex">进入商户工作台</view>
+  <!-- 如果已经是 approved/pending/rejected，直接跳走，这里不会显示表单（逻辑在 .js 的 onLoad 里处理） -->
+  <view class="card">
+    <view class="form-item">
+      <text class="form-label">网点/店铺名称</text>
+      <input class="form-input" placeholder="请输入您的回收站名称或个人秤名称" value="{{shopName}}" bindinput="onShopNameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">负责人姓名</text>
+      <input class="form-input" placeholder="请输入真实姓名" value="{{contactName}}" bindinput="onContactNameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">联系电话</text>
+      <view class="phone-row">
+        <input class="form-input phone-input" type="number" placeholder="请输入手机号" value="{{phone}}" bindinput="onPhoneInput" />
+        <button class="quick-import-btn" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">一键导入</button>
+      </view>
+    </view>
+
+    <!-- 回收常驻网点坐标：通栏卡片，点击调用地图选点 -->
+    <view class="form-item location-card" bindtap="onChooseLocation">
+      <text class="form-label">回收常驻网点/坐标</text>
+      <view class="flex-row">
+        <text class="form-value">{{locationName || '点击在地图上选择网点位置'}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 车辆/网点照片：1张，可删除重拍 -->
+    <view class="form-item">
+      <text class="form-label">车辆/网点照片</text>
+      <view class="text-gray photo-tip">请拍摄您的回收三轮车、货车或实体网点照片</view>
+      <view class="photo-row mt-20">
+        <view wx:if="{{photoPath}}" class="photo-thumb-wrap">
+          <image class="photo-thumb" src="{{photoPath}}" mode="aspectFill" />
+          <view class="photo-delete-mark" catchtap="onDeletePhoto">×</view>
+        </view>
+        <view wx:else class="photo-add-btn" bindtap="onChoosePhoto">+</view>
+      </view>
+    </view>
   </view>
 
-  <!-- pending 状态：展示"审核中"提示 -->
-  <view wx:elif="{{applicationStatus === 'pending'}}" class="card status-card status-pending">
-    <text class="status-title">⏳ 您的入驻申请正在审核中</text>
-    <view class="text-gray mt-20">店铺名称：{{application.shopName}}</view>
-    <view class="text-gray mt-20">服务片区：{{application.serviceArea}}</view>
-    <view class="text-gray mt-40">审核通常在1-3个工作日内完成，请耐心等待</view>
-  </view>
-
-  <!-- none 状态：展示申请表单 -->
-  <view wx:else class="card">
-    <view class="form-item">
-      <text class="form-label">店铺名称</text>
-      <input class="form-input" placeholder="例如：张师傅废品回收站" value="{{shopName}}" bindinput="onShopNameInput" />
+  <view class="bottom-btn-area">
+    <view class="btn-primary {{isSubmitting ? 'btn-disabled' : ''}}" bindtap="onSubmitApply">
+      {{isSubmitting ? '提交中...' : '提交入驻申请'}}
     </view>
-    <view class="form-item">
-      <text class="form-label">联系手机号</text>
-      <input class="form-input" type="number" placeholder="请输入手机号" value="{{phone}}" bindinput="onPhoneInput" />
-    </view>
-    <view class="form-item">
-      <text class="form-label">服务片区</text>
-      <input class="form-input" placeholder="例如：深圳市南山区" value="{{serviceArea}}" bindinput="onServiceAreaInput" />
-    </view>
-    <view class="btn-primary mt-40" bindtap="onSubmitApply">提交申请</view>
   </view>
 
 </view>

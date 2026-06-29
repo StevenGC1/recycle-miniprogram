@@ -10,9 +10,11 @@
 const mock = require('../../../utils/mock.js');
 
 const STATUS_TEXT_MAP = {
+  pending_review: '待审核',
   on_sale: '在售',
   sold: '已售',
-  off_shelf: '已下架'
+  off_shelf: '已下架',
+  rejected: '已驳回'
 };
 
 Page({
@@ -90,8 +92,10 @@ Page({
     }
 
     const merchantId = getApp().globalData.mockUser.merchantId;
+    const merchantName = getApp().globalData.mockUser.merchantName;
     mock.addShopItem(
       merchantId,
+      merchantName,
       this.data.publishName,
       this.data.publishPrice,
       Number(this.data.publishStock) || 1,
@@ -99,7 +103,7 @@ Page({
     );
 
     this.setData({ showPublishModal: false });
-    wx.showToast({ title: '发布成功', icon: 'success' });
+    wx.showToast({ title: '已提交，等待平台审核', icon: 'none' });
     this.loadItemList();
   },
 

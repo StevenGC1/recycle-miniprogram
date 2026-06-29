@@ -18,7 +18,9 @@ Page({
     profile: {},
     isBound: true,
     showServiceModal: false,
-    customerServiceWechat: config.CUSTOMER_SERVICE_WECHAT
+    customerServiceWechat: config.CUSTOMER_SERVICE_WECHAT,
+    showComplaintModal: false,
+    complaintContent: ''
   },
 
   onLoad() {
@@ -66,12 +68,64 @@ Page({
     wx.navigateTo({ url: '/pages/merchantApply/merchantApply' });
   },
 
-  // V1.9 新增：[测试专用] 一键强制把审核状态改成 approved，并 reLaunch 进商户工作台
-  // 真实上线后不会有这个按钮，正式的"身份判定与自动分流"逻辑写在 app.js 的 onLaunch 里
+  // ---------- V2.3 新增：投诉与建议（含前端本地缓存防刷，每天限1次） ----------
+  onOpenComplaint() {
+    // 拦截机制：检查本地缓存里记录的"上次投诉日期"是否就是今天
+    const lastDate = wx.getStorageSync('last_complaint_date');
+    const today = new Date().toDateString();
+    if (lastDate === today) {
+      wx.showToast({ title: '今天您已经反馈过啦，明天再来吧！', icon: 'none' });
+      return; // 直接拦截，不打开输入框
+    }
+    this.setData({ showComplaintModal: true, complaintContent: '' });
+  },
+
+  onCloseComplaintModal() {
+    this.setData({ showComplaintModal: false });
+  },
+
+  onComplaintInput(e) {
+    this.setData({ complaintContent: e.detail.value });
+  },
+
+  onSubmitComplaint() {
+    if (!this.data.complaintContent.trim()) {
+      wx.showToast({ title: '请填写投诉或建议内容', icon: 'none' });
+      return;
+    }
+
+    // 真实接口： POST /api/suggestion/submit { phone, content }
+    mock.submitSuggestion(this.data.profile.myAddress ? '138****1234' : '', this.data.complaintContent);
+
+    // 提交成功后立刻写本地缓存，锁死今天不能再次提交
+    const today = new Date().toDateString();
+    wx.setStorageSync('last_complaint_date', today);
+
+    this.setData({ showComplaintModal: false });
+    wx.showToast({ title: '感谢您的反馈！', icon: 'success' });
+  },
+
+  // ---------- V2.3 新增：三端任意门 ----------
+  onGoResident() {
+    wx.showToast({ title: '您已经在居民端啦', icon: 'none' });
+  },
+
+  // [测试用] 一键强制把审核状态改成 approved，并 reLaunch 进商户工作台
   onForceApproveAndEnter() {
-    mock.submitMerchantApplication('张师傅废品回收站', '13800001234', '深圳市南山区');
+    mock.submitMerchantApplication({
+      shopName: '张师傅废品回收站',
+      contactName: '张师傅',
+      phone: '13800001234',
+      locationName: '深圳市南山区',
+      serviceArea: '深圳市南山区'
+    });
     const application = mock.getMerchantApplication();
     application.status = 'approved'; // 测试场景直接跳过"人工审核"这一步
     wx.reLaunch({ url: '/pages/merchant/index/index' });
+  },
+
+  // [测试用] 直接进入隐藏管理后台
+  onGoAdmin() {
+    wx.navigateTo({ url: '/pages/admin/index/index' });
   }
 });

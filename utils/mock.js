@@ -102,28 +102,73 @@ const MERCHANT_PROFILE = {
 //   'none'     -> 这个微信用户从没申请过商户
 //   'pending'  -> 已提交入驻申请，等待人工审核
 //   'approved' -> 审核通过，是正式商户，小程序启动应自动进商户端工作台
-const MERCHANT_APPLICATION = {
-  // 原型阶段默认 'none'（默认体验用户端），在"我的"页面点击
-  // 【强制切换为已审核商户】按钮后会变成 'approved'，下次启动小程序就会自动进商户工作台
-  status: 'none',
-  shopName: '',
-  phone: '',
-  serviceArea: ''
-};
+//   'rejected' -> 被驳回
+// （V2.3：单条 MERCHANT_APPLICATION 对象已被下方的 MERCHANT_APPLICATION_LIST 取代，
+//  统一用列表结构，方便管理后台同时展示多个申请人）
+
+// V2.3 新增：管理后台用的"全量入驻申请列表"，包含别的（虚构）申请人，
+// 方便你在后台体验"审批大厅"列表效果，不只是你自己这一条。
+// applicantId: 'me' 代表"当前体验用户"自己提交的申请，方便表单页和后台共用同一条数据。
+const MERCHANT_APPLICATION_LIST = [
+  {
+    applicantId: 'me',
+    shopName: '',
+    contactName: '',
+    phone: '',
+    serviceArea: '',
+    locationName: '',
+    latitude: null,
+    longitude: null,
+    photoPath: '',
+    status: 'none',
+    rejectReason: '',
+    submitTime: ''
+  },
+  {
+    applicantId: 'A001',
+    shopName: '李姐回收点',
+    contactName: '李姐',
+    phone: '13900112233',
+    serviceArea: '深圳市福田区',
+    locationName: '福田区上沙村东门',
+    latitude: 22.535,
+    longitude: 114.06,
+    photoPath: '',
+    status: 'pending',
+    rejectReason: '',
+    submitTime: '2026-06-28 16:20'
+  },
+  {
+    applicantId: 'A002',
+    shopName: '老王废品收购站',
+    contactName: '王建国',
+    phone: '13700556677',
+    serviceArea: '深圳市南山区',
+    locationName: '南山区西丽街道',
+    latitude: 22.57,
+    longitude: 113.95,
+    photoPath: '',
+    status: 'pending',
+    rejectReason: '',
+    submitTime: '2026-06-29 09:05'
+  }
+];
 
 // ---------- 2.2 V1.9 新增：商户数据看板 ----------
 const MERCHANT_DASHBOARD = {
-  points: 1280,        // 商户积分（未来用于抢单扣点）
-  todayOrderCount: 3,  // 今日成单数
-  todayWeight: 86       // 今日回收总量（斤）
+  points: 1280,
+  todayOrderCount: 3,
+  todayWeight: 86
 };
 
-// ---------- 2.3 V1.9 新增：商户货架（二手商品发布，是用户端商城的数据源） ----------
-// status 取值：'on_sale'(在售) / 'sold'(已售) / 'off_shelf'(已下架)
+// ---------- 2.3 V1.9 新增：商户货架（二手商品发布） ----------
+// status 取值：'pending_review'(待审核) / 'on_sale'(在售) / 'sold'(已售) / 'off_shelf'(已下架) / 'rejected'(已驳回)
+// V2.3 改动：新发布的商品默认是"待审核"，要在管理后台"二手货架提单审核"通过后才会变成"在售"
 const SHOP_ITEM_LIST = [
   {
     itemId: 'P001',
     merchantId: 'M2001',
+    merchantName: '张师傅废品回收站',
     name: '二手自行车（八成新）',
     price: '120',
     stock: 1,
@@ -134,6 +179,7 @@ const SHOP_ITEM_LIST = [
   {
     itemId: 'P002',
     merchantId: 'M2001',
+    merchantName: '张师傅废品回收站',
     name: '二手电风扇',
     price: '30',
     stock: 1,
@@ -144,14 +190,64 @@ const SHOP_ITEM_LIST = [
   {
     itemId: 'P003',
     merchantId: 'M2001',
+    merchantName: '张师傅废品回收站',
     name: '闲置餐具套装',
     price: '15',
     stock: 1,
     photoList: [],
-    status: 'sold', // 演示"已售"状态
+    status: 'sold',
+    desc: '自提或下次上门回收时顺路配送'
+  },
+  {
+    // V2.3 新增一条"待审核"的商品，方便你在后台直接看到审核大厅的效果
+    itemId: 'P004',
+    merchantId: 'M2001',
+    merchantName: '张师傅废品回收站',
+    name: '九成新山地车',
+    price: '300',
+    stock: 1,
+    photoList: [],
+    status: 'pending_review',
     desc: '自提或下次上门回收时顺路配送'
   }
 ];
+
+// ---------- 2.4 V2.3 新增：用户管理（管理后台用） ----------
+// status 取值：'normal'(正常) / 'banned'(已封禁)
+const USER_LIST = [
+  { userId: 'U10001', nickName: '体验用户', phone: '13800001234', completedOrders: 5, cancelledOrders: 0, status: 'normal' },
+  { userId: 'U10002', nickName: '爱占小便宜的小李', phone: '13911112222', completedOrders: 1, cancelledOrders: 6, status: 'normal' },
+  { userId: 'U10003', nickName: '老实巴交的张大爷', phone: '13722223333', completedOrders: 20, cancelledOrders: 1, status: 'normal' },
+  { userId: 'U10004', nickName: '恶意刷单用户', phone: '13633334444', completedOrders: 0, cancelledOrders: 12, status: 'banned' }
+];
+
+// ---------- 2.5 V2.3 新增：全城商户大盘（管理后台用） ----------
+const MERCHANT_BOARD_LIST = [
+  { merchantId: 'M2001', merchantName: '张师傅废品回收站', points: 1280, todayOrderCount: 3, ratingAvg: 4.8, status: 'normal' },
+  { merchantId: 'M2002', merchantName: '李姐回收点', points: 860, todayOrderCount: 5, ratingAvg: 3.6, status: 'normal' },
+  { merchantId: 'M2003', merchantName: '老王废品收购站', points: 430, todayOrderCount: 1, ratingAvg: 3.9, status: 'normal' },
+  { merchantId: 'M2004', merchantName: '问题商户·快跑回收', points: 90, todayOrderCount: 0, ratingAvg: 2.1, status: 'normal' } // 低评分，用于演示"标红+拉黑"
+];
+
+// ---------- 2.6 V2.3 新增：投诉建议（管理后台用） ----------
+const SUGGESTION_LIST = [
+  {
+    id: 'S001',
+    phone: '13800001234',
+    content: '老张回收不给够斤两，少给了我3斤！',
+    time: '2026-06-28 19:30',
+    handled: false
+  },
+  {
+    id: 'S002',
+    phone: '13911112222',
+    content: '希望可以增加预约提醒功能，老是忘记上门时间',
+    time: '2026-06-27 10:12',
+    handled: true
+  }
+];
+
+
 
 // ---------- 3. 我的页面 - 当前居民信息 ----------
 const RESIDENT_PROFILE = {
@@ -271,20 +367,43 @@ function getResidentProfile() {
   return RESIDENT_PROFILE;
 }
 
-// V1.9 新增：查询当前用户的商户审核状态（对应"判定谁是谁"）
+// V1.9 新增：查询当前用户(applicantId='me')的商户审核状态（对应"判定谁是谁"）
 function getMerchantApplication() {
   // 真实接口： GET /api/merchant/application?openid=xxx
-  return MERCHANT_APPLICATION;
+  return MERCHANT_APPLICATION_LIST.find(a => a.applicantId === 'me');
 }
 
-// V1.9 新增：提交商户入驻申请，状态置为 pending
-function submitMerchantApplication(shopName, phone, serviceArea) {
-  // 真实接口： POST /api/merchant/apply { shopName, phone, serviceArea }
-  MERCHANT_APPLICATION.status = 'pending';
-  MERCHANT_APPLICATION.shopName = shopName;
-  MERCHANT_APPLICATION.phone = phone;
-  MERCHANT_APPLICATION.serviceArea = serviceArea;
-  return MERCHANT_APPLICATION;
+// V2.3 改动：提交申请时记录完整资料（负责人姓名/地图坐标/照片），状态置为 pending
+function submitMerchantApplication(formData) {
+  // 真实接口： POST /api/merchant/apply { shopName, contactName, phone, serviceArea, latitude, longitude, photoPath }
+  const me = MERCHANT_APPLICATION_LIST.find(a => a.applicantId === 'me');
+  Object.assign(me, formData, {
+    status: 'pending',
+    submitTime: new Date().toLocaleString()
+  });
+  return me;
+}
+
+// V2.3 新增：管理后台 - 入驻审批大厅，列出所有 pending 状态的申请
+function getPendingApplications() {
+  return MERCHANT_APPLICATION_LIST.filter(a => a.status === 'pending');
+}
+
+// V2.3 新增：管理后台 - 准予入驻（自动开通商户端权限）
+function approveApplication(applicantId) {
+  const app = MERCHANT_APPLICATION_LIST.find(a => a.applicantId === applicantId);
+  if (app) app.status = 'approved';
+  return app;
+}
+
+// V2.3 新增：管理后台 - 驳回申请（需填写原因）
+function rejectApplication(applicantId, reason) {
+  const app = MERCHANT_APPLICATION_LIST.find(a => a.applicantId === applicantId);
+  if (app) {
+    app.status = 'rejected';
+    app.rejectReason = reason;
+  }
+  return app;
 }
 
 // 商户端"接单大厅"看到的订单池：只展示状态为 wait 的订单，且字段做了隐私脱敏
@@ -347,15 +466,17 @@ function getShopItemList(merchantId) {
 }
 
 // V1.9 新增：发布二手商品
-function addShopItem(merchantId, name, price, stock, photoList) {
+// V2.3 改动：新发布商品默认 'pending_review'，需要管理后台审核通过才会出现在用户端商城
+function addShopItem(merchantId, merchantName, name, price, stock, photoList) {
   const newItem = {
     itemId: 'P' + Date.now(),
     merchantId,
+    merchantName,
     name,
     price,
     stock: stock || 1,
     photoList: photoList || [],
-    status: 'on_sale',
+    status: 'pending_review',
     desc: '自提或下次上门回收时顺路配送'
   };
   SHOP_ITEM_LIST.unshift(newItem);
@@ -397,6 +518,86 @@ function settleOrder(orderId, weight) {
   return order;
 }
 
+// ============================================================
+// V2.3 新增：隐藏管理后台 - 四大模块函数
+// ============================================================
+
+// ---- 模块1：用户管理 ----
+function getUserList(keyword) {
+  // 真实接口： GET /api/admin/users?keyword=xxx
+  if (!keyword) return USER_LIST;
+  return USER_LIST.filter(u => u.phone.indexOf(keyword) > -1 || u.nickName.indexOf(keyword) > -1);
+}
+
+function banUser(userId) {
+  const user = USER_LIST.find(u => u.userId === userId);
+  if (user) user.status = 'banned';
+  return user;
+}
+
+function unbanUser(userId) {
+  const user = USER_LIST.find(u => u.userId === userId);
+  if (user) user.status = 'normal';
+  return user;
+}
+
+// ---- 模块2：商户管理与审批（入驻审批大厅 在上方 getPendingApplications/approveApplication/rejectApplication）----
+// 全城商户大盘：sortBy 取值 'points' / 'todayOrderCount' / 'ratingAvg'
+function getMerchantBoardList(sortBy) {
+  const list = MERCHANT_BOARD_LIST.slice(); // 拷贝一份再排序，不修改原始顺序
+  if (sortBy) {
+    list.sort((a, b) => b[sortBy] - a[sortBy]);
+  }
+  return list;
+}
+
+function blacklistMerchant(merchantId) {
+  const m = MERCHANT_BOARD_LIST.find(m => m.merchantId === merchantId);
+  if (m) m.status = 'blacklisted';
+  return m;
+}
+
+// ---- 模块3：二手货架提单审核 ----
+function getPendingShopItems() {
+  return SHOP_ITEM_LIST.filter(item => item.status === 'pending_review');
+}
+
+function approveShopItem(itemId) {
+  const item = SHOP_ITEM_LIST.find(i => i.itemId === itemId);
+  if (item) item.status = 'on_sale';
+  return item;
+}
+
+function rejectShopItem(itemId) {
+  const item = SHOP_ITEM_LIST.find(i => i.itemId === itemId);
+  if (item) item.status = 'rejected';
+  return item;
+}
+
+// ---- 模块4：投诉建议大厅 ----
+function getSuggestionList() {
+  return SUGGESTION_LIST;
+}
+
+function submitSuggestion(phone, content) {
+  // 真实接口： POST /api/suggestion/submit { phone, content }
+  const newItem = {
+    id: 'S' + Date.now(),
+    phone,
+    content,
+    time: new Date().toLocaleString(),
+    handled: false
+  };
+  SUGGESTION_LIST.unshift(newItem);
+  return newItem;
+}
+
+function markSuggestionHandled(id) {
+  const item = SUGGESTION_LIST.find(s => s.id === id);
+  if (item) item.handled = true;
+  return item;
+}
+
 module.exports = {
   getOrderList,
   getMerchantProfile,
@@ -408,7 +609,6 @@ module.exports = {
   getPriceCategoryList,
   submitOrderComment,
   mockReverseGeocode,
-  // V1.9 新增导出
   getMerchantApplication,
   submitMerchantApplication,
   getMerchantDashboard,
@@ -416,5 +616,20 @@ module.exports = {
   addShopItem,
   updateShopItemStatus,
   updateMerchantPrice,
-  settleOrder
+  settleOrder,
+  // V2.3 新增导出：管理后台四大模块
+  getPendingApplications,
+  approveApplication,
+  rejectApplication,
+  getUserList,
+  banUser,
+  unbanUser,
+  getMerchantBoardList,
+  blacklistMerchant,
+  getPendingShopItems,
+  approveShopItem,
+  rejectShopItem,
+  getSuggestionList,
+  submitSuggestion,
+  markSuggestionHandled
 };

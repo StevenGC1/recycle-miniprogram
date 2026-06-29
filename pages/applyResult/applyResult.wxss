@@ -1,0 +1,36 @@
+/* pages/applyResult/applyResult.wxss */
+
+.container {
+  padding-top: 100rpx;
+}
+
+.status-card {
+  text-align: center;
+  padding: 80rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.status-icon {
+  font-size: 100rpx;
+  margin-bottom: 30rpx;
+}
+.status-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+.status-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+.status-pending .status-title {
+  color: #ff9800;
+}
+.status-approved .status-title {
+  color: #2B9939;
+}
+.status-rejected .status-title {
+  color: #e64340;
+}

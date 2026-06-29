@@ -1,0 +1,230 @@
+/* pages/admin/index/index.wxss */
+
+.admin-tab-bar {
+  display: flex;
+  flex-direction: row;
+  background-color: #2c2c2c;
+}
+.admin-tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 24rpx;
+  color: #aaa;
+}
+.admin-tab-active {
+  color: #fff;
+  font-weight: bold;
+  border-bottom: 4rpx solid #2B9939;
+}
+
+.panel {
+  padding-bottom: 40rpx;
+}
+
+.search-bar {
+  display: flex;
+  flex-direction: row;
+  padding: 20rpx;
+  gap: 12rpx;
+}
+.search-input {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 26rpx;
+}
+.search-btn {
+  background-color: #2B9939;
+  color: #fff;
+  border-radius: 8rpx;
+  padding: 16rpx 24rpx;
+  font-size: 26rpx;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: bold;
+}
+.stat-row {
+  gap: 24rpx;
+}
+.stat-normal {
+  font-size: 24rpx;
+  color: #666;
+}
+.stat-danger {
+  font-size: 24rpx;
+  color: #e64340;
+  font-weight: bold;
+}
+
+.tag-banned {
+  background-color: #fdeaea;
+  color: #e64340;
+}
+
+.action-row {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+.action-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  padding: 16rpx 0;
+  border-radius: 8rpx;
+  background-color: #f5f5f5;
+  color: #333;
+}
+.action-btn-confirm {
+  background-color: #2B9939;
+  color: #fff;
+}
+.action-btn-danger {
+  background-color: #fdeaea;
+  color: #e64340;
+}
+.action-btn-disabled {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  padding: 16rpx 0;
+  color: #ccc;
+}
+
+.empty-tip {
+  text-align: center;
+  color: #999;
+  padding: 80rpx 0;
+  font-size: 26rpx;
+}
+
+.apply-shop-name {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+.view-photo-link {
+  color: #2196f3;
+  font-size: 24rpx;
+}
+
+.sub-tab-bar {
+  display: flex;
+  flex-direction: row;
+  background-color: #fff;
+}
+.sub-tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 26rpx;
+  color: #666;
+}
+.sub-tab-active {
+  color: #2B9939;
+  font-weight: bold;
+  border-bottom: 3rpx solid #2B9939;
+}
+
+.sort-bar {
+  display: flex;
+  flex-direction: row;
+  padding: 20rpx;
+  gap: 12rpx;
+}
+.sort-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 22rpx;
+  padding: 14rpx 0;
+  background-color: #fff;
+  border-radius: 8rpx;
+  color: #666;
+}
+.sort-btn-active {
+  background-color: #2B9939;
+  color: #fff;
+}
+
+.card-warning {
+  border: 2rpx solid #e64340;
+}
+.rating-badge {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #2B9939;
+}
+.rating-badge-low {
+  color: #e64340;
+}
+
+.item-price {
+  font-size: 28rpx;
+  color: #e64340;
+  font-weight: bold;
+}
+
+.card-faded {
+  opacity: 0.5;
+}
+.suggestion-content {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 驳回弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal-box {
+  width: 600rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 36rpx;
+}
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+.reject-textarea {
+  width: 100%;
+  height: 160rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 26rpx;
+  box-sizing: border-box;
+}
+.modal-btn-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+.modal-btn-cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+.modal-btn-confirm {
+  background-color: #2B9939;
+  color: #fff;
+}

@@ -16,7 +16,7 @@
   <view wx:for="{{itemList}}" wx:key="itemId" class="card item-card">
     <view class="flex-between">
       <text class="item-name">{{item.name}}</text>
-      <text class="tag {{item.status === 'on_sale' ? 'tag-done' : 'tag-wait'}}">{{item.statusText}}</text>
+      <text class="tag {{item.status === 'on_sale' ? 'tag-done' : (item.status === 'pending_review' ? 'tag-accepted' : 'tag-wait')}}">{{item.statusText}}</text>
     </view>
     <view class="mt-20 item-price">¥{{item.price}} · 库存{{item.stock}}</view>
     <view wx:if="{{item.status === 'on_sale'}}" class="mt-20 action-row">

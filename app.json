@@ -8,6 +8,8 @@
     "pages/merchant/mine/mine",
     "pages/merchant/priceConfig/priceConfig",
     "pages/merchantApply/merchantApply",
+    "pages/applyResult/applyResult",
+    "pages/admin/index/index",
     "pages/mall/mall",
     "pages/familyBind/familyBind",
     "pages/priceList/priceList"
