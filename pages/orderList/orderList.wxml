@@ -43,9 +43,48 @@
       <text class="order-line">本次回收：{{item.weight}} 斤，获得积分 +{{item.pointsEarned}}</text>
     </view>
 
-    <!-- 只有"待接单"状态才能取消 -->
+    <!-- 待接单状态：保留取消按钮 -->
     <view wx:if="{{item.status === 'wait'}}" class="mt-20 cancel-row">
       <view class="btn-danger" data-id="{{item.orderId}}" bindtap="onCancelOrder">取消订单</view>
+    </view>
+
+    <!-- 已完成状态：未评价显示绿色评价按钮，已评价显示灰色文本 -->
+    <view wx:if="{{item.status === 'done'}}" class="mt-20 comment-row">
+      <view wx:if="{{!item.is_commented}}" class="btn-primary comment-btn" data-id="{{item.orderId}}" bindtap="onOpenCommentModal">评价服务</view>
+      <text wx:else class="text-gray commented-text">已评价 {{item.rating}}星</text>
+    </view>
+  </view>
+
+  <!-- ============ 评价弹窗：星级 + 差评快捷标签 + 提交 ============ -->
+  <view wx:if="{{showCommentModal}}" class="modal-mask" catchtap="onCloseCommentModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">评价本次服务</view>
+
+      <view class="star-row">
+        <text
+          wx:for="{{starList}}"
+          wx:key="*this"
+          class="star-icon"
+          data-value="{{item}}"
+          bindtap="onSelectRating"
+        >{{item <= currentRating ? '★' : '☆'}}</text>
+      </view>
+
+      <!-- 评分 <=3 时显示差评快捷标签，方便用户低分时也能快速说明原因 -->
+      <view wx:if="{{currentRating > 0 && currentRating <= 3}}" class="bad-tag-group">
+        <view
+          wx:for="{{badTags}}"
+          wx:key="value"
+          class="bad-tag {{item.active ? 'bad-tag-active' : ''}}"
+          data-index="{{index}}"
+          bindtap="onToggleBadTag"
+        >{{item.label}}</view>
+      </view>
+
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseCommentModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onSubmitComment">提交评价</view>
+      </view>
     </view>
   </view>
 

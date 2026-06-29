@@ -1,0 +1,101 @@
+<!--
+  pages/merchant/index/index.wxml
+  ============================================================
+  商户端 - 工作台（V1.9 重构）
+  合并了原来的"接单大厅"和"我的任务"：
+    - 顶部固定展示"接单大厅"公共订单池
+    - 下方是任务区，分 [待上门] [已完成] [已取消] 三个子Tab
+============================================================ -->
+<view class="container">
+
+  <!-- ============ 接单大厅：公共订单池 ============ -->
+  <view class="section-title">📍 接单大厅 · 附近 {{radiusKm}} 公里</view>
+
+  <view wx:if="{{hallOrders.length === 0}}" class="empty-tip">暂无可抢订单，稍后再来看看～</view>
+  <view wx:for="{{hallOrders}}" wx:key="orderId" class="card">
+    <view class="flex-between">
+      <text class="community-name">{{item.community}}</text>
+      <text class="tag tag-wait">待接单</text>
+    </view>
+    <view class="mt-20"><text class="order-line">🕒 {{item.appointmentTime}}</text></view>
+    <view wx:if="{{item.remark}}" class="mt-20"><text class="order-line text-gray">备注：{{item.remark}}</text></view>
+    <view class="mt-20 grab-row">
+      <view class="btn-primary grab-btn" data-id="{{item.orderId}}" bindtap="onGrabOrder">抢单</view>
+    </view>
+  </view>
+
+  <!-- ============ 我的任务：三态子Tab ============ -->
+  <view class="section-title mt-40">📋 我的任务</view>
+  <view class="sub-tab-bar">
+    <view
+      wx:for="{{subTabs}}"
+      wx:key="value"
+      class="sub-tab-item {{currentSubTab === item.value ? 'sub-tab-active' : ''}}"
+      data-value="{{item.value}}"
+      bindtap="onSwitchSubTab"
+    >{{item.label}}</view>
+  </view>
+
+  <view wx:if="{{taskList.length === 0}}" class="empty-tip">暂无相关任务</view>
+
+  <view wx:for="{{taskList}}" wx:key="orderId" class="card">
+    <view class="flex-between">
+      <text class="community-name">{{item.community}}</text>
+      <text class="tag {{item.statusTagClass}}">{{item.statusText}}</text>
+    </view>
+    <view class="mt-20"><text class="order-line">📍 {{item.fullAddress}}</text></view>
+    <view class="mt-20"><text class="order-line">📞 {{item.fullPhone}}</text></view>
+    <view class="mt-20"><text class="order-line">🕒 {{item.appointmentTime}}</text></view>
+    <view wx:if="{{item.remark}}" class="mt-20"><text class="order-line text-gray">备注：{{item.remark}}</text></view>
+
+    <!-- 待上门：拨打电话/导航/称重结算 -->
+    <view wx:if="{{item.status === 'accepted'}}" class="action-row mt-40">
+      <view class="action-btn" data-phone="{{item.fullPhone}}" bindtap="onCallResident">📞 拨打电话</view>
+      <view class="action-btn" data-address="{{item.fullAddress}}" bindtap="onNavigate">🧭 一键导航</view>
+      <view class="action-btn action-btn-confirm" data-id="{{item.orderId}}" bindtap="onConfirmDone">✅ 称重结算</view>
+    </view>
+
+    <!-- 已完成：展示账单 + 回显用户评价 -->
+    <view wx:if="{{item.status === 'done'}}" class="mt-20 done-info">
+      <text>本次回收 {{item.weight}} 斤，已发放积分 {{item.pointsEarned}} 分</text>
+    </view>
+    <view wx:if="{{item.status === 'done' && item.is_commented}}" class="mt-20 rating-info">
+      <text class="rating-stars">{{item.ratingStars}}</text>
+      <text class="rating-text">用户评分 {{item.rating}} 星{{item.commentTags && item.commentTags.length ? '：' + item.commentTagsText : ''}}</text>
+    </view>
+    <view wx:if="{{item.status === 'done' && !item.is_commented}}" class="mt-20 text-gray">
+      <text>用户尚未评价</text>
+    </view>
+
+    <!-- 已取消：展示取消原因 -->
+    <view wx:if="{{item.status === 'cancelled'}}" class="mt-20 text-gray">
+      <text>取消原因：{{item.cancelReason || '未填写'}}</text>
+    </view>
+  </view>
+
+  <!-- ============ 底部导航：货架/商户中心/退出 ============ -->
+  <view class="bottom-nav">
+    <view class="bottom-nav-item" bindtap="goShop">商户货架</view>
+    <view class="bottom-nav-item" bindtap="goMine">商户中心</view>
+  </view>
+
+  <!-- ============ 称重结算弹窗 ============ -->
+  <view wx:if="{{showSettleModal}}" class="modal-mask" catchtap="onCloseModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">完成回收 · 称重结算</view>
+      <view class="modal-row">
+        <text class="modal-label">本次回收重量（斤）</text>
+        <input class="modal-input" type="number" placeholder="请输入重量" value="{{settleWeight}}" bindinput="onSettleWeightInput" />
+      </view>
+      <view class="modal-row">
+        <text class="modal-label">将发放积分</text>
+        <text class="modal-points">{{settleWeight || 0}} 分</text>
+      </view>
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onSubmitSettle">确认发放并完成</view>
+      </view>
+    </view>
+  </view>
+
+</view>

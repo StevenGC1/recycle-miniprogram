@@ -1,0 +1,67 @@
+<!--
+  pages/merchant/mine/mine.wxml
+  ============================================================
+  商户端 - 商户中心（V1.9 新增，整合原"推广中心"）
+============================================================ -->
+<view class="container">
+
+  <!-- ============ 数据看板 ============ -->
+  <view class="card dashboard-card">
+    <view class="dashboard-item">
+      <text class="dashboard-num">{{dashboard.points}}</text>
+      <text class="dashboard-label">商户积分</text>
+    </view>
+    <view class="dashboard-item">
+      <text class="dashboard-num">{{dashboard.todayOrderCount}}</text>
+      <text class="dashboard-label">今日成单数</text>
+    </view>
+    <view class="dashboard-item">
+      <text class="dashboard-num">{{dashboard.todayWeight}}</text>
+      <text class="dashboard-label">今日回收量(斤)</text>
+    </view>
+  </view>
+
+  <!-- ============ 工具箱 ============ -->
+  <view class="card">
+    <view class="tool-item" bindtap="onShowPromoCode">
+      <text class="tool-label">📱 我的地推码</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="tool-item" bindtap="onGoPriceConfig">
+      <text class="tool-label">💰 自定义报价</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <view class="card" bindtap="onBackToIndex">
+    <view class="tool-item-no-border">
+      <text class="tool-label">⬅ 返回工作台</text>
+    </view>
+  </view>
+
+  <!-- [测试专用] 退出商户身份，回到用户端。真实上线后不会有这个按钮，
+       真实场景下"是否能进商户端"完全由后台审核状态自动判定，
+       这里只是方便你开发时来回切换两端测试。 -->
+  <view class="card" bindtap="onExitMerchantForTest">
+    <view class="tool-item-no-border">
+      <text class="tool-label text-gray">🔁 [测试用] 退出商户身份，返回用户端</text>
+    </view>
+  </view>
+
+  <!-- ============ 地推码弹窗 ============ -->
+  <view wx:if="{{showPromoModal}}" class="modal-mask" catchtap="onClosePromoModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">我的专属地推码</view>
+      <view class="code-placeholder">
+        <text class="code-icon">🔲</text>
+      </view>
+      <view class="mt-20 code-text">{{merchantProfile.promotionCode}}</view>
+      <view class="mt-20 code-desc">居民扫描此码进入小程序，将自动显示"{{merchantProfile.merchantName}}专属回收服务"</view>
+      <view class="mt-20 text-gray">已绑定客户数：{{merchantProfile.boundResidentCount}}</view>
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-confirm" bindtap="onClosePromoModal">知道了</view>
+      </view>
+    </view>
+  </view>
+
+</view>

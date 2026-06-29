@@ -39,11 +39,42 @@
       <text class="cell-label">联系客服</text>
       <text class="arrow">›</text>
     </view>
+    <!-- V1.9 新增：申请入驻成为回收商 -->
+    <view class="flex-between cell" bindtap="onApplyMerchant">
+      <text class="cell-label">📋 申请入驻成为回收商</text>
+      <text class="arrow">›</text>
+    </view>
   </view>
 
-  <!-- 角色切换入口：演示用户端/商户端共用一个小程序 -->
-  <view class="card switch-role-card" bindtap="onSwitchToMerchant">
-    <text>🔄 我是回收商家，切换至商户端</text>
+  <!-- 联系客服弹窗：微信号可一键复制（wx.showModal原生弹窗不支持复制按钮，所以这里自定义弹窗） -->
+  <view wx:if="{{showServiceModal}}" class="modal-mask" catchtap="onCloseServiceModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">联系客服</view>
+      <view class="service-wechat-row">
+        <text class="service-wechat-text">{{customerServiceWechat}}</text>
+        <view class="copy-btn" bindtap="onCopyWechat">复制</view>
+      </view>
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-confirm" bindtap="onCloseServiceModal">知道了</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- V1.2 新增：测试开关，方便你切换"已绑定商家/未绑定商家"两种首页皮肤体验 -->
+  <view class="card">
+    <view class="flex-between cell">
+      <text class="cell-label">【测试开关】是否绑定专属商家</text>
+      <switch checked="{{isBound}}" color="#2B9939" bindchange="onToggleBound" />
+    </view>
+    <view class="text-gray switch-tip">关闭后回到首页查看"未绑定商家"的展示效果（隐藏一键呼叫、横幅文案变化）</view>
+  </view>
+
+  <!-- ============ V1.9：测试专用"自由切换黑卡" ============ -->
+  <!-- 真实上线后，是否能进商户端完全由后台审核状态(approved)自动判定，
+       不会有这个按钮。这里只是为了方便你在开发阶段不用每次都重新走完整的
+       "申请->（你去后台改状态）->审核通过"流程，一键模拟"已是审核通过商户"的状态。 -->
+  <view class="card switch-role-card" bindtap="onForceApproveAndEnter">
+    <text>🔑 [测试用] 强制切换为已审核商户，进入工作台</text>
   </view>
 
 </view>

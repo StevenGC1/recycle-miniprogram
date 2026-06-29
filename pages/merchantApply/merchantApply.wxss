@@ -1,0 +1,34 @@
+/* pages/merchantApply/merchantApply.wxss */
+
+.form-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.form-item:last-child {
+  border-bottom: none;
+}
+.form-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+  display: block;
+}
+.form-input {
+  font-size: 30rpx;
+  width: 100%;
+}
+
+.status-card {
+  text-align: center;
+  padding: 60rpx 30rpx;
+}
+.status-title {
+  font-size: 30rpx;
+  font-weight: bold;
+}
+.status-approved .status-title {
+  color: #2B9939;
+}
+.status-pending .status-title {
+  color: #ff9800;
+}

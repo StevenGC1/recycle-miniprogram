@@ -46,3 +46,88 @@
   display: flex;
   justify-content: flex-end;
 }
+
+/* ---------- V1.6 评价相关 ---------- */
+.comment-row {
+  display: flex;
+  justify-content: flex-end;
+}
+.comment-btn {
+  padding: 12rpx 32rpx;
+  font-size: 26rpx;
+}
+.commented-text {
+  font-size: 24rpx;
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal-box {
+  width: 600rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 36rpx;
+}
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+.star-row {
+  display: flex;
+  justify-content: center;
+  gap: 12rpx;
+}
+.star-icon {
+  font-size: 60rpx;
+  color: #ffc107;
+}
+.bad-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 24rpx;
+  justify-content: center;
+}
+.bad-tag {
+  font-size: 22rpx;
+  color: #666;
+  background-color: #f5f5f5;
+  border: 2rpx solid #f5f5f5;
+  border-radius: 24rpx;
+  padding: 8rpx 18rpx;
+}
+.bad-tag-active {
+  background-color: #fdeaea;
+  border-color: #e64340;
+  color: #e64340;
+}
+.modal-btn-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+.modal-btn-cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+.modal-btn-confirm {
+  background-color: #2B9939;
+  color: #fff;
+}

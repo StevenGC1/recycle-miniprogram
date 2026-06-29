@@ -13,7 +13,12 @@ Page({
     familyName: '',
     familyAddress: '',
     familyPhone: '',
-    familyList: [] // 已绑定的亲友列表，本地内存维护
+    familyList: [], // 已绑定的亲友列表，本地内存维护
+
+    // 地址补充弹窗相关（与首页逻辑一致）
+    showAddressDetailModal: false,
+    addressBase: '',
+    addressDetail: ''
   },
 
   onNameInput(e) {
@@ -24,26 +29,48 @@ Page({
     this.setData({ familyPhone: e.detail.value });
   },
 
-  // 与首页一致的地址选点逻辑
+  // 与首页一致的地址选点逻辑：先定位大致位置，再弹窗补充门牌号
   onChooseAddress() {
     wx.chooseLocation({
       success: (res) => {
-        const fullAddress = res.name ? `${res.name}（${res.address}）` : res.address;
-        this.setData({ familyAddress: fullAddress });
+        const baseAddress = res.name ? `${res.name}（${res.address}）` : res.address;
+        this.setData({
+          addressBase: baseAddress,
+          addressDetail: '',
+          showAddressDetailModal: true
+        });
       },
       fail: (err) => {
-        console.log('chooseLocation 失败，使用兜底方案', err);
-        wx.showModal({
-          title: '选择地址',
-          content: '当前环境无法调起地图选点，点击"使用模拟地址"继续体验流程',
-          confirmText: '使用模拟地址',
-          success: (modalRes) => {
-            if (modalRes.confirm) {
-              this.setData({ familyAddress: '幸福里小区 8 号楼 1 单元 101 室（模拟定位）' });
-            }
-          }
+        console.log('chooseLocation 失败/取消', err);
+        if (err.errMsg && err.errMsg.indexOf('cancel') > -1) {
+          return;
+        }
+        this.setData({
+          addressBase: '幸福里小区（模拟定位）',
+          addressDetail: '',
+          showAddressDetailModal: true
         });
       }
+    });
+  },
+
+  onAddressDetailInput(e) {
+    this.setData({ addressDetail: e.detail.value });
+  },
+
+  onCloseAddressModal() {
+    this.setData({ showAddressDetailModal: false });
+  },
+
+  noop() {},
+
+  onConfirmAddressDetail() {
+    const full = this.data.addressDetail
+      ? `${this.data.addressBase} ${this.data.addressDetail}`
+      : this.data.addressBase;
+    this.setData({
+      familyAddress: full,
+      showAddressDetailModal: false
     });
   },
 

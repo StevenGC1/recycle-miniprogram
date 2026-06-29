@@ -1,37 +1,48 @@
-// app.js
+// app.js —— V1.9
 // ============================================================
 // 小程序入口文件。
-// 当前阶段（前端原型阶段）只做最简单的事情：
-// 1. 初始化一个全局变量 globalData，里面存放"当前角色"（居民 / 商户）
-//    这是为了模拟"用户端和商户端共用一个小程序，通过角色区分功能"的设计。
-// 2. 不连接任何后端接口，所有数据来自 utils/mock.js 里写死的假数据。
+// V1.9 新增核心逻辑：身份判定与自动分流（对应 PRD"商户怎么注册/如何判定谁是谁"）
+//   1. 模拟"静默登录"：原型阶段没有真实 openid，直接跳过
+//   2. 查询商户审核状态：mock.getMerchantApplication()
+//   3. 分流：
+//      - status === 'approved' -> wx.reLaunch 强行拉进商户工作台
+//      - 其他情况（none / pending） -> 留在用户端首页，不做任何跳转
+// 真实项目里第2步要换成 wx.cloud.callFunction 查云数据库，
+// 原型阶段直接读 utils/mock.js 里的内存数据。
 // ============================================================
 
+const mock = require('./utils/mock.js');
+
 App({
-  // globalData 是小程序官方推荐的"全局变量"存放位置，
-  // 任何页面都可以通过 getApp().globalData.xxx 读取/修改。
   globalData: {
-    // role 的取值：'resident'(居民/用户端) 或 'merchant'(商户端)
-    // 默认进入小程序时是"居民"身份，这也符合真实场景：
-    // 大部分扫码进来的都是要扔废品的居民，商户是少数主动切换的人。
+    // role 字段原型阶段保留作为历史兼容，V1.9 之后实际身份判断改用
+    // mock.getMerchantApplication().status，不再单独维护这个字段
     role: 'resident',
 
-    // 模拟当前登录用户信息（后续接入微信登录后，这里会被真实数据替换）
+    isBound: true,
+
     mockUser: {
       nickName: '体验用户',
       avatarUrl: '',
-      // 居民身份信息
       residentId: 'U10001',
-      // 商户身份信息（如果切换成商户端就会用到）
       merchantId: 'M2001',
       merchantName: '张师傅废品回收站'
     }
   },
 
   onLaunch() {
-    // 小程序启动时执行一次。
-    // 真实项目里这里通常会调用 wx.login() 换取 openid，
-    // 但原型阶段不需要，所以留空，仅打印一条日志方便调试。
     console.log('【小程序启动】资源回收原型 onLaunch');
+
+    // 真实项目：
+    //   wx.login() 拿到 code -> 后端换 openid -> 查 users/merchants 表
+    // 原型阶段：直接读 mock 里的审核状态
+    const application = mock.getMerchantApplication();
+    console.log('【身份判定】当前商户审核状态：', application.status);
+
+    if (application.status === 'approved') {
+      // 已是审核通过的商户：不需要用户手动切换，直接拉进商户工作台，体验更"丝滑"
+      wx.reLaunch({ url: '/pages/merchant/index/index' });
+    }
+    // 其他状态（none / pending）：什么都不做，自然停留在 app.json 里配置的默认首页（用户端首页）
   }
 });

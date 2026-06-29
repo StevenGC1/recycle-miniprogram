@@ -1,0 +1,22 @@
+<!--
+  pages/priceList/priceList.wxml
+  ============================================================
+  回收价格表详情页（点击首页"查看更多"进入）
+  按大分类（纸皮类/金属类/塑料类...）分组展示，参考用户提供的截图结构。
+============================================================ -->
+<view class="container">
+
+  <view class="header-tip">
+    <text class="header-title">{{sourceText}}</text>
+    <text class="header-sub">通过定位可获得您所在区域的回收价格</text>
+  </view>
+
+  <view wx:for="{{categoryList}}" wx:key="category" class="category-block">
+    <view class="category-title">{{item.category}}</view>
+    <view wx:for="{{item.items}}" wx:for-item="sub" wx:key="name" class="price-row">
+      <text class="price-row-name">{{sub.name}}</text>
+      <text class="price-row-value">{{sub.price}}{{sub.price === '面议' ? '' : '元/斤'}}</text>
+    </view>
+  </view>
+
+</view>

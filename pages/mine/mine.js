@@ -1,13 +1,13 @@
-// pages/mine/mine.js
+// pages/mine/mine.js —— V1.9
 // ============================================================
 // "我的"页面逻辑
 // ------------------------------------------------------------
-// 核心点：onSwitchToMerchant() 函数。
-// 这里演示了"角色判断"的最简单实现方式：
-//   把角色写入 app.js 的 globalData.role，
-//   然后用 wx.navigateTo 跳转到商户端的页面。
-// 真实项目中，"切换角色"前应该先校验该用户是否通过了商户审核
-// （对应方案里管理后台的"商家审核表"），原型阶段直接放行。
+// V1.9 改动：
+//   - 新增 onApplyMerchant：跳转去"申请入驻成为回收商"页面
+//   - 新增 onForceApproveAndEnter：开发测试用，一键把审核状态强制改成
+//     approved 并直接进商户工作台，免去你每次测试都要重新走申请流程
+//   - 移除了原来简单的 onSwitchToMerchant（无审核校验直接切换），
+//     符合"取消退出商户逻辑，应由审核状态自动判定"的设计方向
 // ============================================================
 
 const mock = require('../../utils/mock.js');
@@ -15,12 +15,25 @@ const config = require('../../config/config.js');
 
 Page({
   data: {
-    profile: {}
+    profile: {},
+    isBound: true,
+    showServiceModal: false,
+    customerServiceWechat: config.CUSTOMER_SERVICE_WECHAT
   },
 
   onLoad() {
-    // 真实接口： GET /api/resident/profile
     this.setData({ profile: mock.getResidentProfile() });
+  },
+
+  onShow() {
+    this.setData({ isBound: getApp().globalData.isBound });
+  },
+
+  onToggleBound(e) {
+    const newValue = e.detail.value;
+    getApp().globalData.isBound = newValue;
+    this.setData({ isBound: newValue });
+    wx.showToast({ title: newValue ? '已切换为：绑定商家' : '已切换为：未绑定商家', icon: 'none' });
   },
 
   onAddFamily() {
@@ -30,19 +43,35 @@ Page({
   },
 
   onContactService() {
-    wx.showModal({
-      title: '联系客服',
-      content: '客服微信号：' + config.CUSTOMER_SERVICE_WECHAT,
-      showCancel: false
+    this.setData({ showServiceModal: true });
+  },
+
+  onCloseServiceModal() {
+    this.setData({ showServiceModal: false });
+  },
+
+  noop() {},
+
+  onCopyWechat() {
+    wx.setClipboardData({
+      data: this.data.customerServiceWechat,
+      success: () => {
+        wx.showToast({ title: '已复制到剪贴板', icon: 'success' });
+      }
     });
   },
 
-  // 切换到商户端：演示"同一个小程序，靠角色字段区分功能模块"
-  onSwitchToMerchant() {
-    const app = getApp();
-    app.globalData.role = 'merchant';
-    wx.navigateTo({
-      url: '/pages/merchant/hall/hall'
-    });
+  // V1.9 新增：跳转去"申请入驻成为回收商"页面
+  onApplyMerchant() {
+    wx.navigateTo({ url: '/pages/merchantApply/merchantApply' });
+  },
+
+  // V1.9 新增：[测试专用] 一键强制把审核状态改成 approved，并 reLaunch 进商户工作台
+  // 真实上线后不会有这个按钮，正式的"身份判定与自动分流"逻辑写在 app.js 的 onLaunch 里
+  onForceApproveAndEnter() {
+    mock.submitMerchantApplication('张师傅废品回收站', '13800001234', '深圳市南山区');
+    const application = mock.getMerchantApplication();
+    application.status = 'approved'; // 测试场景直接跳过"人工审核"这一步
+    wx.reLaunch({ url: '/pages/merchant/index/index' });
   }
 });

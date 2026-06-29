@@ -1,38 +1,55 @@
 <!--
   pages/index/index.wxml
   ============================================================
-  用户端首页（极简下单页） —— V1.1
+  用户端首页（极简下单页） —— V1.2
   本版本调整：
-    1. 移除了底部独立的"照片上传框"，拍照统一由顶部【拍照下单】按钮触发，
-       拍完后在"备注"上方用小缩略图展示，可删除/重拍。
-    2. 新增"今日回收价"板块（横向滚动）。
-    3. 新增"快捷标签"，点击自动追加备注文字。
-    4. 新增"二手/积分商城"悬浮入口。
+    1. 照片缩略图从"备注上方"挪到【一键呼叫/拍照下单】按钮下方，
+       拍完立刻看得到，最多3张。
+    2. 今日回收价只展示精选几项 + 【查看更多 ››】跳转分类详情页。
+    3. 地址选择后增加"门牌号/楼层"补充输入，弹窗形式收集。
+    4. 新增"未绑定商家"皮肤：隐藏一键呼叫、拍照下单拉满、横幅文案变化。
 ============================================================ -->
 <view class="container">
 
-  <!-- 如果是扫了商户专属码进来的，显示"熟客刷脸"横幅 -->
-  <view wx:if="{{boundMerchantName}}" class="merchant-banner">
-    <text>【{{boundMerchantName}}】专属回收服务</text>
+  <!-- 横幅：绑定商家时显示专属商家名，未绑定时显示通用文案 -->
+  <view class="merchant-banner">
+    <text wx:if="{{isBound}}">【{{boundMerchantName}}】专属回收服务</text>
+    <text wx:else>同城绿色回收大厅（极速上门）</text>
   </view>
 
-  <!-- ============ 顶部两个"极简操作"按钮区 ============ -->
+  <!-- ============ 顶部"极简操作"按钮区 ============ -->
+  <!-- 未绑定商家时隐藏"一键呼叫"（没有专属师傅可呼叫），拍照下单按钮占满整行 -->
   <view class="quick-action-row">
-    <view class="quick-btn quick-btn-call" bindtap="onCallPhone">
+    <view wx:if="{{isBound}}" class="quick-btn quick-btn-call" bindtap="onCallPhone">
       <text class="quick-icon">📞</text>
       <text>一键呼叫</text>
     </view>
-    <view class="quick-btn quick-btn-photo" bindtap="onChoosePhoto">
+    <view class="quick-btn quick-btn-photo {{isBound ? '' : 'quick-btn-full'}}" bindtap="onChoosePhoto">
       <text class="quick-icon">📷</text>
       <text>拍照下单</text>
     </view>
   </view>
 
-  <!-- ============ 新增：今日回收价 板块 ============ -->
+  <!-- ============ 照片缩略图区：紧跟在按钮下方，拍完立刻可见，最多3张 ============ -->
+  <view wx:if="{{photoList.length > 0}}" class="photo-row">
+    <view wx:for="{{photoList}}" wx:key="*this" class="photo-thumb-wrap">
+      <image class="photo-thumb" src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="onPreviewPhoto" />
+      <view class="photo-delete-mark" data-index="{{index}}" catchtap="onDeletePhoto">×</view>
+    </view>
+    <!-- 不满3张时，继续显示"+"让用户补拍 -->
+    <view wx:if="{{photoList.length < 3}}" class="photo-add-btn" bindtap="onChoosePhoto">
+      <text>+</text>
+    </view>
+  </view>
+
+  <!-- ============ 今日回收价 板块（精选展示 + 查看更多） ============ -->
   <view class="price-board">
     <view class="price-board-title">
       <text>💰 今日回收价</text>
-      <text class="price-board-source">{{priceSourceText}}</text>
+      <view class="price-board-more" bindtap="onViewMorePrice">
+        <text class="price-board-source">{{priceSourceText}}</text>
+        <text class="more-arrow">查看更多 ››</text>
+      </view>
     </view>
     <scroll-view scroll-x class="price-scroll" enable-flex>
       <view wx:for="{{priceList}}" wx:key="name" class="price-item">
@@ -42,10 +59,9 @@
     </scroll-view>
   </view>
 
-  <!-- ============ 正式下单表单区（给愿意多点两下的用户） ============ -->
+  <!-- ============ 正式下单表单区 ============ -->
   <view class="card">
 
-    <!-- 地址选择：点击调用微信地图选点/定位 -->
     <view class="form-item" bindtap="onChooseAddress">
       <text class="form-label">上门地址</text>
       <view class="flex-row">
@@ -54,7 +70,6 @@
       </view>
     </view>
 
-    <!-- 上门时间：今天/明天 + 上午/下午，做成简单的按钮组，不用日历选择器，降低理解成本 -->
     <view class="form-item">
       <text class="form-label">上门时间</text>
       <view class="time-option-group">
@@ -70,14 +85,13 @@
         <view
           wx:for="{{periodOptions}}"
           wx:key="value"
-          class="time-option {{selectedPeriod === item.value ? 'time-option-active' : ''}}"
+          class="time-option {{selectedPeriod === item.value ? 'time-option-active' : ''}} {{item.disabled ? 'time-option-disabled' : ''}}"
           data-value="{{item.value}}"
           bindtap="onSelectPeriod"
         >{{item.label}}</view>
       </view>
     </view>
 
-    <!-- 新增：快捷标签，点击后高亮并自动把文字追加进备注框 -->
     <view class="form-item">
       <text class="form-label">快捷标签（可多选）</text>
       <view class="quick-tag-group">
@@ -91,19 +105,6 @@
       </view>
     </view>
 
-    <!-- 已拍摄照片缩略图：在备注上方展示，可删除/重拍。没拍照时不显示这一块 -->
-    <view wx:if="{{tempPhotoPath}}" class="form-item">
-      <text class="form-label">已拍照片</text>
-      <view class="photo-thumb-row">
-        <image class="photo-thumb" src="{{tempPhotoPath}}" mode="aspectFill" bindtap="onPreviewPhoto" />
-        <view class="photo-thumb-actions">
-          <view class="photo-action-btn" bindtap="onChoosePhoto">重拍</view>
-          <view class="photo-action-btn photo-action-delete" bindtap="onDeletePhoto">删除</view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 备注，选填 -->
     <view class="form-item">
       <text class="form-label">备注（选填）</text>
       <input
@@ -115,15 +116,31 @@
     </view>
   </view>
 
-  <!-- ============ 主操作按钮：立即预约 ============ -->
   <view class="bottom-btn-area">
     <view class="btn-primary" bindtap="onSubmitOrder">立即预约</view>
   </view>
 
-  <!-- ============ 新增：悬浮球 - 二手/积分商城入口 ============ -->
   <view class="float-ball" bindtap="onGoMall">
     <text class="float-ball-icon">🛍️</text>
     <text class="float-ball-text">商城</text>
+  </view>
+
+  <!-- ============ 地址补充信息弹窗：定位/选点完成后，弹出让用户补门牌号 ============ -->
+  <view wx:if="{{showAddressDetailModal}}" class="modal-mask" catchtap="onCloseAddressModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">补充门牌信息</view>
+      <view class="modal-sub-tip">{{addressBase}}</view>
+      <input
+        class="modal-input-full"
+        placeholder="请输入楼栋/单元/门牌号，如 3栋2单元502"
+        value="{{addressDetail}}"
+        bindinput="onAddressDetailInput"
+      />
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseAddressModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onConfirmAddressDetail">确认</view>
+      </view>
+    </view>
   </view>
 
 </view>

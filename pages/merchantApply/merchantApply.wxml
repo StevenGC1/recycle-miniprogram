@@ -1,0 +1,40 @@
+<!--
+  pages/merchantApply/merchantApply.wxml
+  ============================================================
+  用户端【我的】页面 -> 申请入驻成为回收商
+  对应 PRD："商户怎么注册" —— 填写资料后状态变为 pending(待审核)
+============================================================ -->
+<view class="container">
+
+  <!-- 已经是 approved 状态时，提示已是商户，引导去工作台 -->
+  <view wx:if="{{applicationStatus === 'approved'}}" class="card status-card status-approved">
+    <text class="status-title">✅ 您已是平台认证商户</text>
+    <view class="btn-primary mt-40" bindtap="onGoMerchantIndex">进入商户工作台</view>
+  </view>
+
+  <!-- pending 状态：展示"审核中"提示 -->
+  <view wx:elif="{{applicationStatus === 'pending'}}" class="card status-card status-pending">
+    <text class="status-title">⏳ 您的入驻申请正在审核中</text>
+    <view class="text-gray mt-20">店铺名称：{{application.shopName}}</view>
+    <view class="text-gray mt-20">服务片区：{{application.serviceArea}}</view>
+    <view class="text-gray mt-40">审核通常在1-3个工作日内完成，请耐心等待</view>
+  </view>
+
+  <!-- none 状态：展示申请表单 -->
+  <view wx:else class="card">
+    <view class="form-item">
+      <text class="form-label">店铺名称</text>
+      <input class="form-input" placeholder="例如：张师傅废品回收站" value="{{shopName}}" bindinput="onShopNameInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">联系手机号</text>
+      <input class="form-input" type="number" placeholder="请输入手机号" value="{{phone}}" bindinput="onPhoneInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">服务片区</text>
+      <input class="form-input" placeholder="例如：深圳市南山区" value="{{serviceArea}}" bindinput="onServiceAreaInput" />
+    </view>
+    <view class="btn-primary mt-40" bindtap="onSubmitApply">提交申请</view>
+  </view>
+
+</view>

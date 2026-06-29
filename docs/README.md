@@ -25,18 +25,25 @@ recycle-miniprogram/
 └── pages/                  所有页面，每个页面4个文件：.js(逻辑) .json(配置) .wxml(结构) .wxss(样式)
     ├── index/index         【用户端】首页 - 极简下单（地址/时间/备注拍照/立即预约/一键呼叫）
     ├── orderList/orderList 【用户端】订单列表 - 按状态筛选(全部/待接单/待上门/已完成)，可取消
-    ├── mine/mine            【用户端】我的 - 地址/积分/客服/切换至商户端入口
+    ├── mine/mine            【用户端】我的 - 地址/积分/客服/申请入驻/测试切换商户身份
+    ├── merchantApply/merchantApply  【用户端】申请入驻成为回收商
+    ├── mall/mall            【用户端】二手/积分商城
+    ├── familyBind/familyBind 【用户端】亲友代下
+    ├── priceList/priceList   【用户端】回收价格表详情（分类展示）
     └── merchant/
-        ├── hall/hall            【商户端】接单大厅 - 公共订单池(隐藏隐私信息)，抢单
-        ├── tasks/tasks          【商户端】我的任务 - 完整地址电话，拨打/导航/确认完成(记账发积分)
-        └── promotion/promotion  【商户端】推广中心 - 专属推广码、绑定客户数统计
+        ├── index/index          【商户端】工作台 - 接单大厅 + 我的任务(待上门/已完成/已取消)
+        ├── shop/shop            【商户端】商户货架 - 发布/管理二手商品
+        ├── mine/mine            【商户端】商户中心 - 数据看板/地推码/自定义报价入口
+        └── priceConfig/priceConfig 【商户端】自定义报价编辑页
 ```
 
-> 注：商户端三个页面**没有**放进 `app.json` 的 `tabBar` 里。因为方案里"商户端内嵌在
-> 同一个小程序中，通过角色判断展示"，所以商户端页面是通过"我的"页面里的
-> 【切换至商户端】按钮，用 `wx.navigateTo` 跳转进入的普通页面，
-> 并在接单大厅页面底部放了"我的任务/推广中心/退出商户端"三个二级入口，
-> 方便你在这几个商户页面之间来回跳转体验。
+> V1.9 重构说明：原来的 `merchant/hall`、`merchant/tasks`、`merchant/promotion` 已被取代，
+> 现在是 `merchant/index`（工作台，合并了接单大厅+我的任务）、`merchant/shop`（商户货架）、
+> `merchant/mine`（商户中心，整合了原推广中心）。
+> 商户身份判定改为"审核状态自动分流"：`app.js` 的 `onLaunch` 会检查
+> `utils/mock.js` 里的 `MERCHANT_APPLICATION.status`，审核通过(`approved`)会自动
+> `wx.reLaunch` 进商户工作台。"我的"页面保留了一个**测试专用**的强制切换按钮，
+> 方便你开发时不用每次走完整申请流程。
 
 ---
 
@@ -48,10 +55,10 @@ recycle-miniprogram/
 | 熟客刷脸 | `pages/index/index.js` 的 `boundMerchantName` 字段 | 模拟扫码进入显示专属横幅，真实场景需在 `onLoad(options)` 里解析扫码参数 |
 | 亲友代下 | `pages/mine/mine.wxml` 的"亲友代下"入口 | 原型阶段只做了入口，未做具体绑定表单 |
 | 隐藏隐私信息（反撬客第一步） | `utils/mock.js` 的 `getHallOrderList()` | 故意不返回 `fullAddress`/`fullPhone` 字段 |
-| 记账与积分留存法 | `pages/merchant/tasks/tasks.js` 的 `onConfirmDone`/`onSubmitSettle` | 商户必须在弹窗里输入重量才能"确认完成"，同时发放积分 |
-| 时间看板/路线规划（效率工具依赖） | `pages/merchant/hall/hall.wxml` + `pages/merchant/tasks/tasks.js` 的 `onNavigate` | 原型阶段仅做了静态展示和模拟坐标导航，真正的"看板"和"路线规划"留给后续迭代 |
-| 推广码裂变 | `pages/merchant/promotion/promotion` | 专属推广码 + 已绑定客户数统计 |
-| 角色判断（用户端/商户端同一小程序） | `app.js` 的 `globalData.role` | `pages/mine/mine.js` 切换为 `merchant`，`pages/merchant/hall/hall.js` 的"退出商户端"切回 `resident` |
+| 记账与积分留存法 | `pages/merchant/index/index.js` 的 `onConfirmDone`/`onSubmitSettle` | 商户必须在弹窗里输入重量才能"称重结算"，同时发放积分 |
+| 时间看板/路线规划（效率工具依赖） | `pages/merchant/index/index.wxml/.js` 的 `onNavigate` | 原型阶段仅做了静态展示和模拟坐标导航，真正的"看板"和"路线规划"留给后续迭代 |
+| 推广码裂变 | `pages/merchant/mine/mine` | 专属推广码弹窗 + 已绑定客户数统计 |
+| 商户注册与身份判定 | `pages/merchantApply` + `app.js` 的 `onLaunch` | 提交申请->`pending`，审核通过(`approved`)后启动小程序自动分流进商户工作台 |
 
 ---
 

@@ -53,4 +53,22 @@
     </view>
   </view>
 
+  <!-- 地址补充信息弹窗：与首页一致 -->
+  <view wx:if="{{showAddressDetailModal}}" class="modal-mask" catchtap="onCloseAddressModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">补充门牌信息</view>
+      <view class="modal-sub-tip">{{addressBase}}</view>
+      <input
+        class="modal-input-full"
+        placeholder="请输入楼栋/单元/门牌号，如 8栋1单元101"
+        value="{{addressDetail}}"
+        bindinput="onAddressDetailInput"
+      />
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseAddressModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onConfirmAddressDetail">确认</view>
+      </view>
+    </view>
+  </view>
+
 </view>

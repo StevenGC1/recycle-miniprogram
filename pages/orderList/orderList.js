@@ -1,4 +1,4 @@
-// pages/orderList/orderList.js
+// pages/orderList/orderList.js —— V1.6
 // ============================================================
 // 用户端订单列表页逻辑
 // ------------------------------------------------------------
@@ -6,11 +6,11 @@
 // 核心逻辑：
 //   1. 根据顶部 tab 选择的状态，对全量订单做前端筛选（filteredOrders）
 //   2. "取消订单"只是从内存里的列表中移除，刷新页面是 demo（不会真的请求后端）
+//   3. V1.6 新增：已完成订单的"评价服务"弹窗（星级 + 差评标签 + 提交）
 // ============================================================
 
 const mock = require('../../utils/mock.js');
 
-// 状态 -> 展示文案 / 样式类 的映射表，避免 wxml 里写一堆 if-else
 const STATUS_MAP = {
   wait: { text: '待接单', tagClass: 'tag-wait' },
   accepted: { text: '待上门', tagClass: 'tag-accepted' },
@@ -26,8 +26,20 @@ Page({
       { label: '已完成', value: 'done' }
     ],
     currentTab: 'all',
-    allOrders: [],      // 原始全量订单（带展示文案处理后的版本）
-    filteredOrders: []  // 根据 currentTab 筛选后的、真正渲染到页面的数据
+    allOrders: [],
+    filteredOrders: [],
+
+    // ---------- V1.6 评价弹窗相关 ----------
+    showCommentModal: false,
+    currentCommentOrderId: '', // 正在评价的订单号
+    currentRating: 0,          // 当前选中的星级，0表示未选
+    starList: [1, 2, 3, 4, 5],
+    badTags: [
+      { label: '上门慢', value: 'slow', active: false },
+      { label: '态度差', value: 'rude', active: false },
+      { label: '估价低', value: 'low_price', active: false },
+      { label: '未按约定时间', value: 'late', active: false }
+    ]
   },
 
   onLoad() {
@@ -35,11 +47,9 @@ Page({
   },
 
   onShow() {
-    // 每次页面显示时重新加载一次（比如从首页下单跳转回来时）
     this.loadOrders();
   },
 
-  // 加载订单数据：从 mock 里取出原始数据，并补充上展示用的文案/样式字段
   loadOrders() {
     const rawList = mock.getOrderList();
     const processedList = rawList.map(order => {
@@ -55,7 +65,6 @@ Page({
     });
   },
 
-  // 根据当前选中的 tab 筛选订单
   applyFilter() {
     const { allOrders, currentTab } = this.data;
     const filtered = currentTab === 'all'
@@ -70,7 +79,6 @@ Page({
     });
   },
 
-  // 取消订单：原型阶段只在前端内存中移除，不调用后端接口
   onCancelOrder(e) {
     const orderId = e.currentTarget.dataset.id;
     wx.showModal({
@@ -86,5 +94,76 @@ Page({
         }
       }
     });
+  },
+
+  // ---------- V1.6 评价相关 ----------
+
+  // 点击【评价服务】，打开弹窗，重置星级和标签状态
+  onOpenCommentModal(e) {
+    const orderId = e.currentTarget.dataset.id;
+    const resetTags = this.data.badTags.map(t => Object.assign({}, t, { active: false }));
+    this.setData({
+      showCommentModal: true,
+      currentCommentOrderId: orderId,
+      currentRating: 0,
+      badTags: resetTags
+    });
+  },
+
+  onCloseCommentModal() {
+    this.setData({ showCommentModal: false });
+  },
+
+  noop() {},
+
+  onSelectRating(e) {
+    const value = Number(e.currentTarget.dataset.value);
+    this.setData({ currentRating: value });
+  },
+
+  onToggleBadTag(e) {
+    const index = e.currentTarget.dataset.index;
+    const badTags = this.data.badTags.map((tag, i) => {
+      if (i === index) {
+        return Object.assign({}, tag, { active: !tag.active });
+      }
+      return tag;
+    });
+    this.setData({ badTags });
+  },
+
+  // 提交评价：调用 mock.submitOrderComment 模拟"写库"，并联动积分提示
+  onSubmitComment() {
+    if (!this.data.currentRating) {
+      wx.showToast({ title: '请先选择星级', icon: 'none' });
+      return;
+    }
+
+    const selectedTags = this.data.badTags.filter(t => t.active).map(t => t.label);
+
+    // 真实接口： POST /api/order/comment { orderId, rating, tags }
+    mock.submitOrderComment(this.data.currentCommentOrderId, this.data.currentRating, selectedTags);
+    console.log('【模拟提交评价】订单：', this.data.currentCommentOrderId, '星级：', this.data.currentRating, '标签：', selectedTags);
+
+    this.setData({ showCommentModal: false });
+
+    // 局部刷新：把对应订单标记为已评价，不用整页重新拉取
+    const newAllOrders = this.data.allOrders.map(order => {
+      if (order.orderId === this.data.currentCommentOrderId) {
+        return Object.assign({}, order, {
+          is_commented: true,
+          rating: this.data.currentRating
+        });
+      }
+      return order;
+    });
+    this.setData({ allOrders: newAllOrders }, () => {
+      this.applyFilter();
+    });
+
+    // 积分翻倍/联动激励提示，对应"记账与积分"留存策略的延伸：
+    // 评价完成后给点额外好处，鼓励用户走完整个流程
+    wx.showToast({ title: '感谢评价，获得额外 5 积分！', icon: 'success', duration: 2000 });
   }
 });
+

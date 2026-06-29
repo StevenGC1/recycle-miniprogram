@@ -3,11 +3,14 @@
     "pages/index/index",
     "pages/orderList/orderList",
     "pages/mine/mine",
-    "pages/merchant/hall/hall",
-    "pages/merchant/tasks/tasks",
-    "pages/merchant/promotion/promotion",
+    "pages/merchant/index/index",
+    "pages/merchant/shop/shop",
+    "pages/merchant/mine/mine",
+    "pages/merchant/priceConfig/priceConfig",
+    "pages/merchantApply/merchantApply",
     "pages/mall/mall",
-    "pages/familyBind/familyBind"
+    "pages/familyBind/familyBind",
+    "pages/priceList/priceList"
   ],
   "window": {
     "navigationBarBackgroundColor": "#2B9939",
@@ -36,5 +39,10 @@
     ]
   },
   "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取上门地址定位及展示您所在区域的回收价格"
+    }
+  },
   "style": "v2"
 }

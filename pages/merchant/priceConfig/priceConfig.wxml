@@ -1,0 +1,33 @@
+<!--
+  pages/merchant/priceConfig/priceConfig.wxml
+  ============================================================
+  商户中心 - 自定义报价
+  商户可修改各品类的"今日回收价"，改动后立即同步到居民端展示。
+============================================================ -->
+<view class="container">
+
+  <view class="tip-bar">改动会立即同步到您绑定客户在用户端看到的价格</view>
+
+  <view wx:for="{{categoryList}}" wx:key="category" class="category-block">
+    <view class="category-title">{{item.category}}</view>
+    <view wx:for="{{item.items}}" wx:for-item="sub" wx:key="name" class="price-row">
+      <text class="price-row-name">{{sub.name}}</text>
+      <view class="price-edit-area">
+        <input
+          class="price-input"
+          type="digit"
+          value="{{sub.price}}"
+          data-category="{{item.category}}"
+          data-name="{{sub.name}}"
+          bindinput="onPriceInput"
+        />
+        <text class="price-unit">元/斤</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-btn-area">
+    <view class="btn-primary" bindtap="onSaveAll">保存修改</view>
+  </view>
+
+</view>

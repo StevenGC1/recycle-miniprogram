@@ -1,0 +1,65 @@
+<!--
+  pages/merchant/shop/shop.wxml
+  ============================================================
+  商户端 - 商户货架（V1.9 新增）
+  顶部【+ 发布二手闲置】，下方是已上架商品列表，可下架/标记已售。
+  这里上架的商品是用户端"二手/积分商城"的数据源。
+============================================================ -->
+<view class="container">
+
+  <view class="publish-btn-row">
+    <view class="btn-primary publish-btn" bindtap="onOpenPublishModal">+ 发布二手闲置</view>
+  </view>
+
+  <view wx:if="{{itemList.length === 0}}" class="empty-tip">还没有上架任何商品</view>
+
+  <view wx:for="{{itemList}}" wx:key="itemId" class="card item-card">
+    <view class="flex-between">
+      <text class="item-name">{{item.name}}</text>
+      <text class="tag {{item.status === 'on_sale' ? 'tag-done' : 'tag-wait'}}">{{item.statusText}}</text>
+    </view>
+    <view class="mt-20 item-price">¥{{item.price}} · 库存{{item.stock}}</view>
+    <view wx:if="{{item.status === 'on_sale'}}" class="mt-20 action-row">
+      <view class="action-btn" data-id="{{item.itemId}}" bindtap="onOffShelf">下架</view>
+      <view class="action-btn action-btn-confirm" data-id="{{item.itemId}}" bindtap="onMarkSold">标记已售</view>
+    </view>
+  </view>
+
+  <!-- ============ 发布商品弹窗 ============ -->
+  <view wx:if="{{showPublishModal}}" class="modal-mask" catchtap="onCloseModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">发布二手闲置</view>
+
+      <view class="form-item">
+        <text class="form-label">商品图片（最多3张）</text>
+        <view class="photo-row">
+          <view wx:for="{{publishPhotoList}}" wx:key="*this" class="photo-thumb-wrap">
+            <image class="photo-thumb-small" src="{{item}}" mode="aspectFill" />
+          </view>
+          <view wx:if="{{publishPhotoList.length < 3}}" class="photo-add-btn-small" bindtap="onChoosePublishPhoto">+</view>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">商品名称</text>
+        <input class="form-input" placeholder="例如：二手自行车" value="{{publishName}}" bindinput="onPublishNameInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">二手标价（元）</text>
+        <input class="form-input" type="number" placeholder="例如：120" value="{{publishPrice}}" bindinput="onPublishPriceInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">库存</text>
+        <input class="form-input" type="number" placeholder="默认1" value="{{publishStock}}" bindinput="onPublishStockInput" />
+      </view>
+
+      <view class="modal-btn-row">
+        <view class="modal-btn modal-btn-cancel" bindtap="onCloseModal">取消</view>
+        <view class="modal-btn modal-btn-confirm" bindtap="onSubmitPublish">确认发布</view>
+      </view>
+    </view>
+  </view>
+
+</view>
